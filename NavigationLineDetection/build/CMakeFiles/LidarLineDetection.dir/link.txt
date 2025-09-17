@@ -1,0 +1,3 @@
+D:\openCV\cmake-3.20.2\bin\cmake.exe -E rm -f CMakeFiles\LidarLineDetection.dir/objects.a
+D:\openCV\mingw64-8.1.0\bin\ar.exe cr CMakeFiles\LidarLineDetection.dir/objects.a @CMakeFiles\LidarLineDetection.dir\objects1.rsp
+D:\openCV\mingw64-8.1.0\bin\g++.exe -shared -o libLidarLineDetection.dll -Wl,--out-implib,libLidarLineDetection.dll.a -Wl,--major-image-version,0,--minor-image-version,0 -Wl,--whole-archive CMakeFiles\LidarLineDetection.dir/objects.a -Wl,--no-whole-archive @CMakeFiles\LidarLineDetection.dir\linklibs.rsp
