@@ -2,9 +2,9 @@
 #include <windows.h>
 #include <commdlg.h>
 #include <iostream>
+#include "roi_selector.h"
 using namespace std;
 using namespace cv;
-#include "roi_selector.h"
 
 // 全局变量用于鼠标回调
 static Mat g_testImage;
@@ -19,10 +19,12 @@ static void onMouseTest(int event, int x, int y, int flags, void* userdata) {
         Mat testImage = g_testImage.clone();
         drawQuadROI(testImage, g_testQuadRoi, Scalar(0, 255, 0), 2);
         circle(testImage, testPoint, 8, inside ? Scalar(0, 0, 255) : Scalar(255, 0, 0), -1);
-        putText(testImage, inside ? "在四边形内" : "在四边形外", 
+        putText(testImage, inside ? "Yes" : "No", 
                Point(x+10, y-10), FONT_HERSHEY_SIMPLEX, 0.6, 
                inside ? Scalar(0, 0, 255) : Scalar(255, 0, 0), 2);
-        imshow("点检测测试", testImage);
+        // 调整窗口大小
+        resizeWindow("Test", WINDOW_WIDTH, WINDOW_HEIGHT);
+        imshow("Test", testImage);
     }
 }
 
@@ -117,7 +119,7 @@ int main() {
                 // 绘制四边形ROI
                 Mat resultImage = image.clone();
                 drawQuadROI(resultImage, quadRoi, Scalar(0, 255, 0), 2);
-                imshow("四边形ROI结果", resultImage);
+                imshow("QuadROI Result", resultImage);
                 
                 if (saveQuadROIToFile(quadRoi, "quad_roi.txt")) {
                     cout << "四边形ROI已保存到 quad_roi.txt" << endl;
@@ -127,15 +129,16 @@ int main() {
                 
                 // 演示点检测功能
                 cout << "点击图像上的任意位置测试点是否在四边形内..." << endl;
-                namedWindow("点检测测试", WINDOW_AUTOSIZE);
+                namedWindow("Test", WINDOW_NORMAL);                 // 修改为可调整大小的窗口类型
+                resizeWindow("Test", WINDOW_WIDTH, WINDOW_HEIGHT);  // 设置窗口尺寸
                 
                 // 设置全局变量供回调函数使用
                 g_testImage = image.clone();
                 g_testQuadRoi = quadRoi;
                 
-                setMouseCallback("点检测测试", onMouseTest);
+                setMouseCallback("Test", onMouseTest);
                 
-                imshow("点检测测试", resultImage);
+                imshow("Test", resultImage);
                 waitKey(0);
             } else {
                 cout << "未选择有效四边形ROI。" << endl;

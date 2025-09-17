@@ -85,8 +85,9 @@ QuadROI selectQuadROIFromImage(const Mat& image, const string& windowName) {
     g_windowName = windowName;
     g_selectionComplete = false;
     
-    // 创建窗口并设置鼠标回调
-    namedWindow(windowName, WINDOW_AUTOSIZE);
+    // 创建窗口并设置鼠标回调，窗口大小设置为800x600
+    namedWindow(windowName, WINDOW_NORMAL);     // 修改为可调整大小的窗口类型
+    resizeWindow(windowName, WINDOW_WIDTH, WINDOW_HEIGHT);         // 添加窗口尺寸设置
     setMouseCallback(windowName, onMouse);
     
     // 显示图像和说明
