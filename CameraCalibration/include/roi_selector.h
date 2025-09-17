@@ -2,6 +2,7 @@
 #include <opencv2/opencv.hpp>
 #include <string>
 #include <vector>
+#include "camera_functions.h"
 
 // 四边形ROI结构体
 struct QuadROI {

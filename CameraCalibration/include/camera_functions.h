@@ -3,6 +3,10 @@
 #include <vector>
 #include <string>
 
+// 我的窗口大小是1980 * 1080，同比例缩小
+#define WINDOW_WIDTH 1980
+#define WINDOW_HEIGHT 1080
+
 struct CameraCalibration {
     cv::Point2d target_center;
     double max_deviation = 5.0;
