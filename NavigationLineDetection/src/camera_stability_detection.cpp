@@ -121,7 +121,7 @@ namespace CameraStabilityDetection {
         if (centers.size() != 4) {
             logger->error("Failed to detect 4 black squares, found: {} squares", centers.size());
             cv::putText(displayImage, "Target Detection Failed: " + std::to_string(centers.size()) + " targets found", 
-                       cv::Point(20, 30), cv::FONT_HERSHEY_SIMPLEX, 0.7, cv::Scalar(0, 0, 255), 2);
+                       cv::Point(20, 30), cv::FONT_HERSHEY_SIMPLEX, 1.2, cv::Scalar(0, 0, 255), 2);
             return false;
         }
         
@@ -160,7 +160,7 @@ namespace CameraStabilityDetection {
         if (outCenter.x < 0 || outCenter.y < 0) {
             logger->error("Failed to calculate target center, center coordinates: ({:.2f}, {:.2f})", outCenter.x, outCenter.y);
             cv::putText(displayImage, "Center Calculation Failed", 
-                       cv::Point(20, 60), cv::FONT_HERSHEY_SIMPLEX, 0.7, cv::Scalar(0, 0, 255), 2);
+                       cv::Point(20, 60), cv::FONT_HERSHEY_SIMPLEX, 1.2, cv::Scalar(0, 0, 255), 2);
             return DetectionResultCode::CAMERA_SELF_CHECK_FAILED;
         }
         
@@ -183,7 +183,7 @@ namespace CameraStabilityDetection {
             result.error_code = static_cast<int>(detect_result);
             logger->error("Target surface detection failed, error code: {}", result.error_code);
             // 在显示图像上标注失败原因
-            cv::putText(displayImage, "Target surface Detection Failed", cv::Point(20, 60), cv::FONT_HERSHEY_SIMPLEX, 0.7, cv::Scalar(0, 0, 255), 2);
+            cv::putText(displayImage, "Target surface Detection Failed", cv::Point(20, 60), cv::FONT_HERSHEY_SIMPLEX, 1.2, cv::Scalar(0, 0, 255), 2);
             return result;
         }
 
@@ -201,7 +201,7 @@ namespace CameraStabilityDetection {
         // 在显示图像上绘制检测结果
         circle(displayImage, config.expected_center, (int)config.tolerance, Scalar(0, 0, 255), 2);
         line(displayImage, config.expected_center, currentCenter, Scalar(0, 255, 255), 2);
-        putText(displayImage, result.message, Point(20, 30), FONT_HERSHEY_SIMPLEX, 0.7, Scalar(0, 0, 255), 2);
+        putText(displayImage, result.message, Point(20, 30), FONT_HERSHEY_SIMPLEX, 1.2, Scalar(0, 0, 255), 2);
 
         logger->info("Camera self-test completed: {} (distance: {:.1f}px)", 
                     result.is_stable ? "stable" : "moved", result.distance);
