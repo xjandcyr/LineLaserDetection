@@ -1,0 +1,12 @@
+[2025-09-18 17:16:42.726] [lidar_logger] [info] 
+===============================================================================
+[2025-09-18 17:16:42.726] [lidar_logger] [info] Start lidar line detection, sn: 123456
+[2025-09-18 17:16:42.726] [lidar_logger] [info] ROI configuration path: ../config/ROI_CONFIG.ini
+[2025-09-18 17:16:42.726] [lidar_logger] [info] Quad ROI config read successfully: X1(464,509), X2(1744,540), X3(1744,592), X4(467,573)
+[2025-09-18 17:16:42.726] [lidar_logger] [info] Use quadrilateral ROI for detection
+[2025-09-18 17:16:42.726] [lidar_logger] [info] Start laser line detection within the quadrilateral ROI
+[2025-09-18 17:16:42.751] [lidar_logger] [info] Navigation laser line RMS: 1.921286696777832
+[2025-09-18 17:16:42.751] [lidar_logger] [info] Navigation laser line length: 186.0605239868164, ROI Width: 1280.3753355949966
+[2025-09-18 17:16:42.751] [lidar_logger] [info] Navigation laser line length: 186.0605239868164, ROI Width: 1280.3753355949966
+[2025-09-18 17:16:42.774] [lidar_logger] [info] Result image saved: ../output/result_123456_Thu_Sep_18_17_16_42_2025_.jpg
+[2025-09-18 17:16:42.775] [lidar_logger] [error] Quad ROI laser line detection failed, Error Code: 1

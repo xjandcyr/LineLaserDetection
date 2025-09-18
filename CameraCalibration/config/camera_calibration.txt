@@ -1,0 +1,3 @@
+center_x: 1089.91
+center_y: 530.959
+tolerance: 5

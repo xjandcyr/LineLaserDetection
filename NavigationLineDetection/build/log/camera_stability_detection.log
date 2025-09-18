@@ -1,0 +1,11 @@
+[2025-09-18 17:16:42.788] [camera_logger] [info] 
+===============================================================================
+[2025-09-18 17:16:42.788] [camera_logger] [info] Start reading camera config file: ../config/CAMERA_CALIBRATION.ini
+[2025-09-18 17:16:42.788] [camera_logger] [info] Camera config read successfully: center=(1089.91, 530.96), tolerance=5.00
+[2025-09-18 17:16:42.788] [camera_logger] [info] camera movement detect start
+[2025-09-18 17:16:42.788] [camera_logger] [info] target surface center detect start
+[2025-09-18 17:16:42.789] [camera_logger] [info] black squares detect start
+[2025-09-18 17:16:42.792] [camera_logger] [info] black squares detect end, found 4 black squares
+[2025-09-18 17:16:42.792] [camera_logger] [info] target surface center detect end, center coordinates: (1089.91, 530.96)
+[2025-09-18 17:16:42.792] [camera_logger] [info] Camera self-test completed: stable (distance: 0.0px)
+[2025-09-18 17:16:42.814] [camera_logger] [info] Camera self-test image saved: ../output/camera_check_Thu_Sep_18_17_16_42_2025_.jpg

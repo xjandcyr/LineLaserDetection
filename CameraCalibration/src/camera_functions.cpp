@@ -28,14 +28,14 @@ bool CameraCalibration::loadFromFile(const string& filePath) {
         string line;
         bool xRead = false, yRead = false, devRead = false;
         while (getline(file, line)) {
-            if (line.find("target_center_x:") == 0) {
-                sscanf(line.c_str(), "target_center_x: %lf", &target_center.x);
+            if (line.find("center_x:") == 0) {
+                sscanf(line.c_str(), "center_x: %lf", &target_center.x);
                 xRead = true;
-            } else if (line.find("target_center_y:") == 0) {
-                sscanf(line.c_str(), "target_center_y: %lf", &target_center.y);
+            } else if (line.find("center_y:") == 0) {
+                sscanf(line.c_str(), "center_y: %lf", &target_center.y);
                 yRead = true;
-            } else if (line.find("max_deviation:") == 0) {
-                sscanf(line.c_str(), "max_deviation: %lf", &max_deviation);
+            } else if (line.find("tolerance:") == 0) {
+                sscanf(line.c_str(), "tolerance: %lf", &max_deviation);
                 devRead = true;
             }
         }
