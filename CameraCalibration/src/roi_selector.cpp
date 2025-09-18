@@ -27,7 +27,7 @@ static void onMouse(int event, int x, int y, int flags, void* userdata) {
             for (size_t i = 0; i < g_points.size(); ++i) {
                 circle(displayImage, g_points[i], 5, Scalar(0, 255, 0), -1);
                 putText(displayImage, to_string(i + 1), g_points[i] + Point2f(10, -10), 
-                       FONT_HERSHEY_SIMPLEX, 0.5, Scalar(0, 255, 0), 1);
+                       FONT_HERSHEY_SIMPLEX, 1.2, Scalar(0, 255, 0), 1);
             }
             
             // 绘制已连接的线段
@@ -54,7 +54,7 @@ static void onMouse(int event, int x, int y, int flags, void* userdata) {
             for (size_t i = 0; i < g_points.size(); ++i) {
                 circle(displayImage, g_points[i], 5, Scalar(0, 255, 0), -1);
                 putText(displayImage, to_string(i + 1), g_points[i] + Point2f(10, -10), 
-                       FONT_HERSHEY_SIMPLEX, 0.5, Scalar(0, 255, 0), 1);
+                       FONT_HERSHEY_SIMPLEX, 1.2, Scalar(0, 255, 0), 1);
             }
             
             // 绘制已连接的线段
@@ -93,9 +93,9 @@ QuadROI selectQuadROIFromImage(const Mat& image, const string& windowName) {
     // 显示图像和说明
     Mat displayImage = image.clone();
     putText(displayImage, "Click 4 points to define the quadrilateral ROI", Point(10, 30), 
-           FONT_HERSHEY_SIMPLEX, 0.7, Scalar(255, 255, 0), 2);
+           FONT_HERSHEY_SIMPLEX, 1.2, Scalar(255, 255, 0), 2);
     putText(displayImage, "Press ESC to cancel selection", Point(10, 60), 
-           FONT_HERSHEY_SIMPLEX, 0.5, Scalar(255, 255, 0), 1);
+           FONT_HERSHEY_SIMPLEX, 1.2, Scalar(255, 255, 0), 1);
     imshow(windowName, displayImage);
     
     // 等待用户完成选择
@@ -199,7 +199,7 @@ void drawQuadROI(Mat& image, const QuadROI& quadRoi, const Scalar& color, int th
     for (size_t i = 0; i < quadRoi.points.size(); ++i) {
         circle(image, quadRoi.points[i], 5, color, -1);
         putText(image, to_string(i + 1), quadRoi.points[i] + Point2f(10, -10), 
-               FONT_HERSHEY_SIMPLEX, 0.5, color, 1);
+               FONT_HERSHEY_SIMPLEX, 1.2, color, 1);
     }
     
     // 绘制四边形边线

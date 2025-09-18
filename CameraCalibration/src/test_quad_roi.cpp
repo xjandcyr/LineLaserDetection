@@ -33,9 +33,9 @@ int main() {
         
         // 添加说明文字
         putText(testImage, "加载的四边形ROI", Point(10, 30), 
-               FONT_HERSHEY_SIMPLEX, 0.8, Scalar(0, 0, 0), 2);
+               FONT_HERSHEY_SIMPLEX, 1.2, Scalar(0, 0, 0), 2);
         putText(testImage, "点击测试点检测功能", Point(10, 60), 
-               FONT_HERSHEY_SIMPLEX, 0.6, Scalar(0, 0, 0), 1);
+               FONT_HERSHEY_SIMPLEX, 1.2, Scalar(0, 0, 0), 1);
 
         // 设置鼠标回调进行点检测测试
         namedWindow("加载的四边形ROI", WINDOW_AUTOSIZE);
@@ -54,12 +54,12 @@ int main() {
                 string resultText = inside ? "在四边形内" : "在四边形外";
                 Scalar textColor = inside ? Scalar(0, 0, 255) : Scalar(255, 0, 0);
                 putText(testImage, resultText, Point(x+10, y-10), 
-                       FONT_HERSHEY_SIMPLEX, 0.7, textColor, 2);
+                       FONT_HERSHEY_SIMPLEX, 1.2, textColor, 2);
                 
                 putText(testImage, "加载的四边形ROI", Point(10, 30), 
-                       FONT_HERSHEY_SIMPLEX, 0.8, Scalar(0, 0, 0), 2);
+                       FONT_HERSHEY_SIMPLEX, 1.2, Scalar(0, 0, 0), 2);
                 putText(testImage, "点击测试点检测功能", Point(10, 60), 
-                       FONT_HERSHEY_SIMPLEX, 0.6, Scalar(0, 0, 0), 1);
+                       FONT_HERSHEY_SIMPLEX, 1.2, Scalar(0, 0, 0), 1);
                 
                 imshow("加载的四边形ROI", testImage);
             }
@@ -88,9 +88,9 @@ int main() {
     drawQuadROI(sampleImage, sampleQuadRoi, Scalar(255, 0, 0), 2);
     
     putText(sampleImage, "示例四边形ROI", Point(10, 30), 
-           FONT_HERSHEY_SIMPLEX, 0.8, Scalar(0, 0, 0), 2);
+           FONT_HERSHEY_SIMPLEX, 1.2, Scalar(0, 0, 0), 2);
     putText(sampleImage, "点击测试点检测功能", Point(10, 60), 
-           FONT_HERSHEY_SIMPLEX, 0.6, Scalar(0, 0, 0), 1);
+           FONT_HERSHEY_SIMPLEX, 1.2, Scalar(0, 0, 0), 1);
 
     // 设置鼠标回调
     namedWindow("示例四边形ROI", WINDOW_AUTOSIZE);
@@ -109,12 +109,12 @@ int main() {
             string resultText = inside ? "在四边形内" : "在四边形外";
             Scalar textColor = inside ? Scalar(0, 0, 255) : Scalar(255, 0, 0);
             putText(testImage, resultText, Point(x+10, y-10), 
-                   FONT_HERSHEY_SIMPLEX, 0.7, textColor, 2);
+                   FONT_HERSHEY_SIMPLEX, 1.2, textColor, 2);
             
             putText(testImage, "示例四边形ROI", Point(10, 30), 
-                   FONT_HERSHEY_SIMPLEX, 0.8, Scalar(0, 0, 0), 2);
+                   FONT_HERSHEY_SIMPLEX, 1.2, Scalar(0, 0, 0), 2);
             putText(testImage, "点击测试点检测功能", Point(10, 60), 
-                   FONT_HERSHEY_SIMPLEX, 0.6, Scalar(0, 0, 0), 1);
+                   FONT_HERSHEY_SIMPLEX, 1.2, Scalar(0, 0, 0), 1);
             
             imshow("示例四边形ROI", testImage);
         }

@@ -20,7 +20,7 @@ static void onMouseTest(int event, int x, int y, int flags, void* userdata) {
         drawQuadROI(testImage, g_testQuadRoi, Scalar(0, 255, 0), 2);
         circle(testImage, testPoint, 8, inside ? Scalar(0, 0, 255) : Scalar(255, 0, 0), -1);
         putText(testImage, inside ? "Yes" : "No", 
-               Point(x+10, y-10), FONT_HERSHEY_SIMPLEX, 0.6, 
+               Point(x+10, y-10), FONT_HERSHEY_SIMPLEX, 1.2, 
                inside ? Scalar(0, 0, 255) : Scalar(255, 0, 0), 2);
         // 调整窗口大小
         resizeWindow("Test", WINDOW_WIDTH, WINDOW_HEIGHT);

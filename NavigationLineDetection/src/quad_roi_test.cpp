@@ -30,7 +30,7 @@ int main() {
         cv::line(visualizationImage, quadPoints[i], quadPoints[(i + 1) % 4], cv::Scalar(0, 255, 0), 3);
         cv::circle(visualizationImage, quadPoints[i], 5, cv::Scalar(0, 0, 255), -1);
         cv::putText(visualizationImage, "X" + std::to_string(i + 1), 
-                   quadPoints[i] + cv::Point(10, 10), cv::FONT_HERSHEY_SIMPLEX, 0.7, cv::Scalar(255, 255, 255), 2);
+                   quadPoints[i] + cv::Point(10, 10), cv::FONT_HERSHEY_SIMPLEX, 1.2, cv::Scalar(255, 255, 255), 2);
     }
 
     // 保存四边形ROI可视化图像

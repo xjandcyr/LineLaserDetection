@@ -198,7 +198,7 @@ namespace LidarLineDetector {
                 cv::line(resultImage, quadRoi.points[i], quadRoi.points[(i + 1) % 4], cv::Scalar(0, 255, 0), 1);
             }
             cv::putText(resultImage, message, cv::Point(20, 30), 
-                    cv::FONT_HERSHEY_SIMPLEX, 0.7, cv::Scalar(0, 0, 255), 2);
+                    cv::FONT_HERSHEY_SIMPLEX, 1.2, cv::Scalar(0, 0, 255), 2);
             
             std::string fileName = generateFileName(outputDir + "/result", sn);
             if (cv::imwrite(fileName, resultImage))
