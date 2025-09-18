@@ -76,7 +76,7 @@ int main() {
         case 1: {
             // 矩形ROI选择
             cout << "选择矩形ROI..." << endl;
-            Rect roi = selectROIFromImage(image, "选择矩形ROI");
+            Rect roi = selectROIFromImage(image, "Select RectROI");
             if (roi.width > 0 && roi.height > 0) {
                 cout << "已选择矩形ROI: x=" << roi.x << ", y=" << roi.y 
                      << ", w=" << roi.width << ", h=" << roi.height << endl;
@@ -84,7 +84,7 @@ int main() {
                 // 绘制矩形ROI
                 Mat resultImage = image.clone();
                 rectangle(resultImage, roi, Scalar(0, 255, 0), 2);
-                imshow("矩形ROI结果", resultImage);
+                imshow("RectROI Result", resultImage);
                 
                 if (saveROIToFile(roi, "rect_roi.txt")) {
                     cout << "矩形ROI已保存到 rect_roi.txt" << endl;
@@ -104,7 +104,7 @@ int main() {
             cout << "选择四边形ROI..." << endl;
             cout << "请点击4个点来定义四边形，按ESC取消选择" << endl;
             
-            QuadROI quadRoi = selectQuadROIFromImage(image, "选择四边形ROI");
+            QuadROI quadRoi = selectQuadROIFromImage(image, "Select QuadROI");
             if (quadRoi.isValid()) {
                 cout << "已选择四边形ROI，顶点坐标：" << endl;
                 for (size_t i = 0; i < quadRoi.points.size(); ++i) {
@@ -121,8 +121,8 @@ int main() {
                 drawQuadROI(resultImage, quadRoi, Scalar(0, 255, 0), 2);
                 imshow("QuadROI Result", resultImage);
                 
-                if (saveQuadROIToFile(quadRoi, "quad_roi.txt")) {
-                    cout << "四边形ROI已保存到 quad_roi.txt" << endl;
+                if (saveQuadROIToFile(quadRoi, "../config/quad_roi.txt")) {
+                    cout << "四边形ROI已保存到 config/quad_roi.txt" << endl;
                 } else {
                     cout << "保存四边形ROI失败！" << endl;
                 }
@@ -138,6 +138,8 @@ int main() {
                 
                 setMouseCallback("Test", onMouseTest);
                 
+                // 显示测试窗口
+                resizeWindow("Test", WINDOW_WIDTH, WINDOW_HEIGHT);
                 imshow("Test", resultImage);
                 waitKey(0);
             } else {
@@ -157,8 +159,8 @@ int main() {
                 // 保存标定数据
                 CameraCalibration calibration;
                 calibration.target_center = center;
-                if (calibration.saveToFile("camera_calibration.txt")) {
-                    cout << "相机标定成功，数据已保存到 camera_calibration.txt" << endl;
+                if (calibration.saveToFile("config/camera_calibration.txt")) {
+                    cout << "相机标定成功，数据已保存到 ../config/camera_calibration.txt" << endl;
                     
                     // 在图像上绘制角点和中心点
                     Mat resultImage = image.clone();
@@ -174,7 +176,9 @@ int main() {
                     line(resultImage, Point(center.x, center.y-10), Point(center.x, center.y+10), Scalar(0, 255, 255), 1);
                     
                     // 显示结果
-                    imshow("标定结果", resultImage);
+                    namedWindow("Camera Calibration Result", WINDOW_NORMAL);
+                    resizeWindow("Camera Calibration Result", WINDOW_WIDTH, WINDOW_HEIGHT);
+                    imshow("Camera Calibration Result", resultImage);
                     waitKey(0);
                 } else {
                     cout << "保存标定数据失败" << endl;

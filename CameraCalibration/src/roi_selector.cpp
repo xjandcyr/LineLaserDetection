@@ -92,10 +92,10 @@ QuadROI selectQuadROIFromImage(const Mat& image, const string& windowName) {
     
     // 显示图像和说明
     Mat displayImage = image.clone();
-    putText(displayImage, "点击4个点定义四边形ROI", Point(10, 30), 
-           FONT_HERSHEY_SIMPLEX, 0.7, Scalar(255, 255, 255), 2);
-    putText(displayImage, "按ESC取消选择", Point(10, 60), 
-           FONT_HERSHEY_SIMPLEX, 0.5, Scalar(255, 255, 255), 1);
+    putText(displayImage, "Click 4 points to define the quadrilateral ROI", Point(10, 30), 
+           FONT_HERSHEY_SIMPLEX, 0.7, Scalar(255, 255, 0), 2);
+    putText(displayImage, "Press ESC to cancel selection", Point(10, 60), 
+           FONT_HERSHEY_SIMPLEX, 0.5, Scalar(255, 255, 0), 1);
     imshow(windowName, displayImage);
     
     // 等待用户完成选择
@@ -132,8 +132,10 @@ bool saveQuadROIToFile(const QuadROI& quadRoi, const string& filePath) {
     if (!file.is_open()) return false;
     
     file << "QUAD_ROI" << endl; // 文件标识
-    for (const auto& point : quadRoi.points) {
-        file << point.x << " " << point.y << endl;
+    // 修改输出格式为带坐标标签的样式
+    for (int i = 0; i < 4; ++i) {
+        file << "X" << (i+1) << ": " << quadRoi.points[i].x 
+             << ", " << quadRoi.points[i].y << endl;
     }
     file.close();
     return true;

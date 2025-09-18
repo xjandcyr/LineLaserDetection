@@ -36,10 +36,10 @@ struct QuadROI {
 };
 
 // 矩形ROI选择（原有功能）
-cv::Rect selectROIFromImage(const cv::Mat& image, const std::string& windowName = "选择ROI");
+cv::Rect selectROIFromImage(const cv::Mat& image, const std::string& windowName = "Select RectROI");
 
 // 四边形ROI选择（新功能）
-QuadROI selectQuadROIFromImage(const cv::Mat& image, const std::string& windowName = "选择四边形ROI");
+QuadROI selectQuadROIFromImage(const cv::Mat& image, const std::string& windowName = "Select QuadROI");
 
 // 保存ROI区域到文件
 bool saveROIToFile(const cv::Rect& roi, const std::string& filePath);
