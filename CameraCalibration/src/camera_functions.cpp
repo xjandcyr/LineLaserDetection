@@ -10,9 +10,9 @@ bool CameraCalibration::saveToFile(const string& filePath) const {
     try {
         ofstream file(filePath);
         if (!file.is_open()) return false;
-        file << "target_center_x: " << target_center.x << endl;
-        file << "target_center_y: " << target_center.y << endl;
-        file << "max_deviation: " << max_deviation << endl;
+        file << "center_x: " << target_center.x << endl;
+        file << "center_y: " << target_center.y << endl;
+        file << "tolerance: " << max_deviation << endl;
         file.close();
         return true;
     } catch (const exception& e) {

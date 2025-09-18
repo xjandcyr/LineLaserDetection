@@ -51,12 +51,12 @@ namespace LidarLineDetector {
     // 读取ROI配置文件
     DetectionResultCode readROIFromConfig(const string &configPath, ROI &roi)
     {
-        logger->info("开始读取ROI配置文件: {}", configPath);
+        logger->info("Load ROI configuration file:{}", configPath);
         ifstream configFile(configPath);
         if (!configFile.is_open())
         {
-            logger->error("无法打开配置文件: {}", configPath);
-            perror("错误信息"); // 打印系统错误信息
+            logger->error("Unable to open ROI config file: {}", configPath);
+            perror("error message"); // 打印系统错误信息
             return DetectionResultCode::CONFIG_LOAD_FAILED;
         }
 
@@ -92,19 +92,19 @@ namespace LidarLineDetector {
             return DetectionResultCode::CONFIG_LOAD_FAILED;
         if (roi.width <= 0 || roi.height <= 0)
             return DetectionResultCode::ROI_INVALID;
-        logger->info("ROI配置读取成功: x={}, y={}, w={}, h={}", roi.x, roi.y, roi.width, roi.height);
+        logger->info("ROI config loaded successfully: x={}, y={}, w={}, h={}", roi.x, roi.y, roi.width, roi.height);
         return DetectionResultCode::SUCCESS;
     }
 
     // 读取四边形ROI配置文件
     DetectionResultCode readQuadROIFromConfig(const string &configPath, QuadROI &quadRoi)
     {
-        logger->info("开始读取四边形ROI配置文件: {}", configPath);
+        logger->info("ROI configuration path: {}", configPath);
         ifstream configFile(configPath);
         if (!configFile.is_open())
         {
-            logger->error("无法打开配置文件: {}", configPath);
-            perror("错误信息");
+            logger->error("ROI config file path is invalid: {}", configPath);
+            perror("error message");
             return DetectionResultCode::CONFIG_LOAD_FAILED;
         }
 
@@ -142,7 +142,7 @@ namespace LidarLineDetector {
 
         if (!x1Read || !x2Read || !x3Read || !x4Read)
         {
-            logger->error("四边形ROI配置读取不完整");
+            logger->error("Quad ROI configuration reading is incomplete");
             return DetectionResultCode::CONFIG_LOAD_FAILED;
         }
 
@@ -158,11 +158,11 @@ namespace LidarLineDetector {
 
         if (area < 100) // 最小面积阈值
         {
-            logger->error("四边形ROI面积过小: {}", area);
+            logger->error("The quadrilateral ROI area is too small: {}", area);
             return DetectionResultCode::ROI_INVALID;
         }
 
-        logger->info("四边形ROI配置读取成功: X1({},{}), X2({},{}), X3({},{}), X4({},{})", 
+        logger->info("Quad ROI config read successfully: X1({},{}), X2({},{}), X3({},{}), X4({},{})", 
                     quadRoi.points[0].x, quadRoi.points[0].y,
                     quadRoi.points[1].x, quadRoi.points[1].y,
                     quadRoi.points[2].x, quadRoi.points[2].y,
@@ -182,10 +182,44 @@ namespace LidarLineDetector {
         return basePath + "_" + sn + "_" + timeStr + ".jpg";
     }
 
+    // 保存失败图像的函数
+    void saveResultImage(const cv::Mat& sourceImage,
+                        const std::string& message,
+                        const std::string& sn,
+                        const cv::Rect& roi,
+                        const std::string& outputDir,
+                        LidarDetectionResult &result)
+    {
+        if (! outputDir.empty())
+        {
+            cv::Mat resultImage = sourceImage.clone();
+            cv::rectangle(resultImage, roi, cv::Scalar(0, 0, 255), 2);
+            cv::putText(resultImage, message, cv::Point(20, 30), 
+                    cv::FONT_HERSHEY_SIMPLEX, 0.7, cv::Scalar(0, 0, 255), 2);
+            
+            std::string fileName = generateFileName(outputDir + "_result", sn);
+            if (cv::imwrite(fileName, resultImage))
+            {
+                logger->info("Result image saved: {}", fileName);
+                result.image_path = fileName;
+            }
+            else
+            {
+                logger->error("Failed to save result image: {}", fileName);
+                result.status = DetectionResultCode::IMAGE_SAVE_FAILED;
+            }
+        }
+        else
+        {
+            logger->error("Output directory is empty");
+            result.status = DetectionResultCode::IMAGE_SAVE_FAILED;
+        }
+    }
+
     // 激光线检测核心函数
     LidarDetectionResult detectLidarLine(const cv::Mat& image, const ROI& roi, const std::string& sn, const std::string& outputDir)
     {
-        logger->info("开始激光线检测，ROI: x={}, y={}, w={}, h={}", roi.x, roi.y, roi.width, roi.height);
+        logger->info("Start laser line detection, ROI: x={}, y={}, w={}, h={}", roi.x, roi.y, roi.width, roi.height);
         LidarDetectionResult result;
         result.status = DetectionResultCode::NOT_FOUND;
         result.line_angle = 0.0f;
@@ -197,44 +231,24 @@ namespace LidarLineDetector {
             roiRect.x + roiRect.width > image.cols ||
             roiRect.y + roiRect.height > image.rows)
         {
-            logger->error("ROI超出图像范围");
-            result.status = DetectionResultCode::OUT_OF_ROI;
-            // 保存失败图像
-            if (!outputDir.empty())
-            {
-                cv::Mat resultImage = image.clone();
-                cv::rectangle(resultImage, cv::Rect(roi.x, roi.y, roi.width, roi.height), cv::Scalar(0, 0, 255), 2);
-                cv::putText(resultImage, "ROI Out of Range", cv::Point(20, 30), cv::FONT_HERSHEY_SIMPLEX, 0.7, cv::Scalar(0, 0, 255), 2);
-                std::string fileName = generateFileName(outputDir + "/result", sn);
-                if (cv::imwrite(fileName, resultImage))
-                {
-                    logger->info("失败结果图像已保存: {}", fileName);
-                    result.image_path = fileName;
-                }
-            }
+            string failMsg = "ROI Out of the image Range";
+            logger->error(failMsg);
+            saveResultImage(image, failMsg, sn, roiRect, outputDir, result);
+            result.status = DetectionResultCode::ROI_INVALID;
             return result;
         }
+
         // 提取ROI区域
         cv::Mat roiMat = image(roiRect).clone();
         if (roiMat.empty())
         {
-            logger->error("提取ROI区域失败");
-            result.status = DetectionResultCode::OUT_OF_ROI;
-            // 保存失败图像
-            if (!outputDir.empty())
-            {
-                cv::Mat resultImage = image.clone();
-                cv::rectangle(resultImage, cv::Rect(roi.x, roi.y, roi.width, roi.height), cv::Scalar(0, 0, 255), 2);
-                cv::putText(resultImage, "ROI Extraction Failed", cv::Point(20, 30), cv::FONT_HERSHEY_SIMPLEX, 0.7, cv::Scalar(0, 0, 255), 2);
-                std::string fileName = generateFileName(outputDir + "/result", sn);
-                if (cv::imwrite(fileName, resultImage))
-                {
-                    logger->info("失败结果图像已保存: {}", fileName);
-                    result.image_path = fileName;
-                }
-            }
+            string failMsg = "Failed to extract ROI area, ROI is empty";
+            logger->error(failMsg);
+            saveResultImage(image, failMsg, sn, roiRect, outputDir, result);
+            result.status = DetectionResultCode::ROI_INVALID;
             return result;
         }
+
         // 灰度化
         cv::Mat gray;
         cv::cvtColor(roiMat, gray, cv::COLOR_BGR2GRAY);
@@ -248,6 +262,7 @@ namespace LidarLineDetector {
                 }
             }
         }
+        
         // 可视化激光点
         cv::Mat debugPoints = roiMat.clone();
         for (const auto& pt : laserPoints) {
@@ -259,25 +274,15 @@ namespace LidarLineDetector {
         }
 
         // 判据1：点数
-        if (laserPoints.size() < 10)
+        if (laserPoints.size() < 100)
         {
-            logger->error("激光点太少，检测失败，点数: {}", laserPoints.size());
+            logger->error("Too few laser points, number of points: {}", laserPoints.size());
+            string failMsg = "Too few laser points, number of points: " + std::to_string(laserPoints.size());
+            saveResultImage(image, failMsg, sn, roiRect, outputDir, result);
             result.status = DetectionResultCode::NOT_FOUND;
-            // 保存失败图像
-            if (!outputDir.empty())
-            {
-                cv::Mat resultImage = image.clone();
-                cv::rectangle(resultImage, cv::Rect(roi.x, roi.y, roi.width, roi.height), cv::Scalar(0, 0, 255), 2);
-                cv::putText(resultImage, "Insufficient Laser Points: " + std::to_string(laserPoints.size()), cv::Point(20, 30), cv::FONT_HERSHEY_SIMPLEX, 0.7, cv::Scalar(0, 0, 255), 2);
-                std::string fileName = generateFileName(outputDir + "/result", sn);
-                if (cv::imwrite(fileName, resultImage))
-                {
-                    logger->info("失败结果图像已保存: {}", fileName);
-                    result.image_path = fileName;
-                }
-            }
             return result;
         }
+
         // 用fitLine拟合直线
         cv::Vec4f line;
         cv::fitLine(laserPoints, line, cv::DIST_L2, 0, 0.01, 0.01);
@@ -290,6 +295,14 @@ namespace LidarLineDetector {
             sumDist2 += dist * dist;
         }
         double rms = std::sqrt(sumDist2 / laserPoints.size());
+        if (rms > 5.0)
+        {
+            logger->error("RMS error is too high, RMS: {}", rms);
+            string failMsg = "RMS error is too high, RMS: " + std::to_string(rms);
+            saveResultImage(image, failMsg, sn, roiRect, outputDir, result);
+            result.status = DetectionResultCode::NOT_FOUND;
+            return result;
+        }
 
         // 判据3：投影长度
         std::vector<double> projections;
@@ -299,31 +312,19 @@ namespace LidarLineDetector {
         }
         auto minmax = std::minmax_element(projections.begin(), projections.end());
         double length = *minmax.second - *minmax.first;
-
         // 阈值可根据实际调整
-        if (rms > 5.0 || length < roi.width * 0.97) {
-            logger->error("激光点分布不线性或长度不足，RMS: {}, 长度: {}", rms, length);
-            result.status = DetectionResultCode::OUT_OF_ROI;
-            // 保存失败图像
-            if (!outputDir.empty()) {
-                cv::Mat resultImage = image.clone();
-                cv::rectangle(resultImage, cv::Rect(roi.x, roi.y, roi.width, roi.height), cv::Scalar(0, 0, 255), 2);
-                std::string reason = (rms > 3.0) ? ("RMS: " + std::to_string(rms)) : ("Length: " + std::to_string(length));
-                cv::putText(resultImage, "No Laser Line: " + reason, cv::Point(20, 30), cv::FONT_HERSHEY_SIMPLEX, 0.7, cv::Scalar(0, 0, 255), 2);
-                std::string fileName = generateFileName(outputDir + "/result", sn);
-                if (cv::imwrite(fileName, resultImage))
-                {
-                    logger->info("失败结果图像已保存: {}", fileName);
-                    result.image_path = fileName;
-                }
-            }
+        if (length < roi.width * 0.97) {
+            logger->error("The length is too short, length: {}", length);
+            string failMsg = "The length is too short, length: " + std::to_string(length);
+            saveResultImage(image, failMsg, sn, roiRect, outputDir, result);
+            result.status = DetectionResultCode::NOT_FOUND;
             return result;
         }
 
         float lineAngle = std::atan2(line[1], line[0]);
         result.status = DetectionResultCode::SUCCESS;
         result.line_angle = lineAngle;
-        logger->info("激光线检测成功，角度: {:.2f}°，点数: {}, RMS: {:.2f}, 长度: {:.2f}", lineAngle * 180.0 / CV_PI, laserPoints.size(), rms, length);
+        logger->info("Laser line detection is successful, angle: {:.2f}°, number of points: {}, RMS: {:.2f}, length: {:.2f}", lineAngle * 180.0 / CV_PI, laserPoints.size(), rms, length);
         // 如果输出目录不为空，保存结果图像
         if (!outputDir.empty())
         {
@@ -349,13 +350,13 @@ namespace LidarLineDetector {
             std::string fileName = generateFileName(outputDir + "/result", sn);
             if (cv::imwrite(fileName, resultImage))
             {
-                logger->info("检测结果图像已保存: {}", fileName);
+                logger->info("Detection result image name: {}", fileName);
                 result.image_path = fileName;
             }
             else
             
             {
-                logger->error("保存图像失败: {}", fileName);
+                logger->error("Failed image name: {}", fileName);
             }
         }
         return result;
@@ -364,39 +365,23 @@ namespace LidarLineDetector {
     // 使用四边形ROI的激光线检测核心函数
     LidarDetectionResult detectLidarLineWithQuadROI(const cv::Mat& image, const QuadROI& quadRoi, const std::string& sn, const std::string& outputDir)
     {
-        logger->info("开始四边形ROI激光线检测");
+        logger->info("Start laser line detection within the quadrilateral ROI");
         LidarDetectionResult result;
         result.status = DetectionResultCode::NOT_FOUND;
         result.line_angle = 0.0f;
         result.image_path = "";
 
         // 检查四边形ROI是否在图像范围内
-        for (int i = 0; i < 4; i++)
+        cv::Rect roiRect(quadRoi.points[0].x, quadRoi.points[0].y, quadRoi.points[2].x - quadRoi.points[0].x, quadRoi.points[2].y - quadRoi.points[0].y);
+        if (roiRect.x < 0 || roiRect.y < 0 ||
+            roiRect.x + roiRect.width > image.cols ||
+            roiRect.y + roiRect.height > image.rows)
         {
-            if (quadRoi.points[i].x < 0 || quadRoi.points[i].y < 0 ||
-                quadRoi.points[i].x >= image.cols || quadRoi.points[i].y >= image.rows)
-            {
-                logger->error("四边形ROI超出图像范围，点{}: ({}, {})", i, quadRoi.points[i].x, quadRoi.points[i].y);
-                result.status = DetectionResultCode::OUT_OF_ROI;
-                // 保存失败图像
-                if (!outputDir.empty())
-                {
-                    cv::Mat resultImage = image.clone();
-                    // 绘制四边形ROI
-                    for (int j = 0; j < 4; j++)
-                    {
-                        cv::line(resultImage, quadRoi.points[j], quadRoi.points[(j + 1) % 4], cv::Scalar(0, 0, 255), 2);
-                    }
-                    cv::putText(resultImage, "Quad ROI Out of Range", cv::Point(20, 30), cv::FONT_HERSHEY_SIMPLEX, 0.7, cv::Scalar(0, 0, 255), 2);
-                    std::string fileName = generateFileName(outputDir + "/result", sn);
-                    if (cv::imwrite(fileName, resultImage))
-                    {
-                        logger->info("失败结果图像已保存: {}", fileName);
-                        result.image_path = fileName;
-                    }
-                }
-                return result;
-            }
+            logger->error("ROI exceeds the image range, point{}: ({}, {})",roiRect.x, roiRect.y);
+            string failMsg = "ROI exceeds the image range, point" + std::to_string(roiRect.x) + ", " + std::to_string(roiRect.y) + ")";
+            saveResultImage(image, failMsg, sn, roiRect, outputDir, result);
+            result.status = DetectionResultCode::ROI_INVALID;
+            return result;
         }
 
         // 创建四边形ROI的掩码
@@ -413,8 +398,8 @@ namespace LidarLineDetector {
         image.copyTo(roiMat, mask);
         if (roiMat.empty())
         {
-            logger->error("提取四边形ROI区域失败");
-            result.status = DetectionResultCode::OUT_OF_ROI;
+            logger->error("Failed to extract the quadrilateral ROI area, ROI is empty");
+            result.status = DetectionResultCode::ROI_INVALID;
             return result;
         }
 
@@ -438,31 +423,16 @@ namespace LidarLineDetector {
             cv::circle(debugPoints, pt, 1, cv::Scalar(0, 0, 255), -1);
         }
         if (!outputDir.empty()) {
-            std::string debugFileName = generateFileName(outputDir + "/debug_laser_points", sn);
+            std::string debugFileName = generateFileName(outputDir + "/ROI_laser_points", sn);
             cv::imwrite(debugFileName, debugPoints);
         }
 
-        // 判据1：导航激光线所占像素数量过小，认为激光线不存在
+        // 判据1：导航激光线所占像素数量过小，认为激光线不在ROI区域内
         if (laserPoints.size() < 100) {
-            logger->error("导航激光线所占像素数量不足: {}", laserPoints.size());
-            result.status = DetectionResultCode::NOT_FOUND;
-            // 保存失败图像
-            if (!outputDir.empty()) {
-                cv::Mat resultImage = image.clone();
-                // 绘制四边形ROI
-                for (int j = 0; j < 4; j++)
-                {
-                    cv::line(resultImage, quadRoi.points[j], quadRoi.points[(j + 1) % 4], cv::Scalar(0, 0, 255), 2);
-                }
-                cv::putText(resultImage, "Insufficient Laser Points: " + std::to_string(laserPoints.size()), 
-                           cv::Point(20, 30), cv::FONT_HERSHEY_SIMPLEX, 0.7, cv::Scalar(0, 0, 255), 2);
-                std::string fileName = generateFileName(outputDir + "/result", sn);
-                if (cv::imwrite(fileName, resultImage))
-                {
-                    logger->info("失败结果图像已保存: {}", fileName);
-                    result.image_path = fileName;
-                }
-            }
+            logger->error("The laser line is not within the ROI area, number of points: {}", laserPoints.size());
+            string failMsg = "number of Laser Points: " + std::to_string(laserPoints.size());
+            saveResultImage(image, failMsg, sn, roiRect, outputDir, result);
+            result.status = DetectionResultCode::OUT_OF_ROI;
             return result;
         }
 
@@ -478,7 +448,14 @@ namespace LidarLineDetector {
             sumDist2 += dist * dist;
         }
         double rms = std::sqrt(sumDist2 / laserPoints.size());
-        logger->info("导航激光线RMS误差: {}", rms);
+        logger->info("Navigation laser line RMS: {}", rms);
+        if (rms > 5.0) {
+            logger->error("RMS is too high, RMS: {}", rms);
+            string failMsg = "RMS is too high, RMS: " + std::to_string(rms);
+            saveResultImage(image, failMsg, sn, roiRect, outputDir, result);
+            result.status = DetectionResultCode::NOT_FOUND;
+            return result;
+        }
 
         // 判据3：投影长度
         std::vector<double> projections;
@@ -497,29 +474,15 @@ namespace LidarLineDetector {
             double dist = cv::norm(quadRoi.points[i] - quadRoi.points[j]);
             roiWidth = std::max(roiWidth, dist);
         }
-        logger->info("导航激光线投影长度: {}, ROI宽度: {}", length, roiWidth);
+        logger->info("Navigation laser line length: {}, ROI Width: {}", length, roiWidth);
 
         // 阈值可根据实际调整
-        if (rms > 5.0 || length < roiWidth * 0.97) {
-            logger->error("激光点分布不线性或长度不足，RMS: {}, 长度: {}, ROI宽度: {}", rms, length, roiWidth);
-            result.status = DetectionResultCode::OUT_OF_ROI;
-            // 保存失败图像
-            if (!outputDir.empty()) {
-                cv::Mat resultImage = image.clone();
-                // 绘制四边形ROI
-                for (int j = 0; j < 4; j++)
-                {
-                    cv::line(resultImage, quadRoi.points[j], quadRoi.points[(j + 1) % 4], cv::Scalar(0, 0, 255), 2);
-                }
-                std::string reason = (rms > 5.0) ? ("RMS: " + std::to_string(rms)) : ("Length: " + std::to_string(length));
-                cv::putText(resultImage, "No Laser Line: " + reason, cv::Point(20, 30), cv::FONT_HERSHEY_SIMPLEX, 0.7, cv::Scalar(0, 0, 255), 2);
-                std::string fileName = generateFileName(outputDir + "/result", sn);
-                if (cv::imwrite(fileName, resultImage))
-                {
-                    logger->info("失败结果图像已保存: {}", fileName);
-                    result.image_path = fileName;
-                }
-            }
+        if (length < roiWidth * 0.97)
+        {
+            logger->info("Navigation laser line length: {}, ROI Width: {}", length, roiWidth);
+            string failMsg = "The length is too short, length: " + std::to_string(length);
+            saveResultImage(image, failMsg, sn, roiRect, outputDir, result);
+            result.status = DetectionResultCode::NOT_FOUND;
             return result;
         }
 
@@ -554,11 +517,10 @@ namespace LidarLineDetector {
             int x3_y = quadRoi.points[2].y;
             int x4_y = quadRoi.points[3].y;
             // 判断left.y在X1~X4，right.y在X2~X3
-            logger->info("左端点y: {}, 右端点y: {}", pt1_roi.y, pt2_roi.y);
             bool left_in = (pt1_roi.y >= x1_y - 5) && (pt1_roi.y <= x4_y + 5);
             bool right_in = (pt2_roi.y >= x2_y -5) && (pt2_roi.y <= x3_y + 5);
             if (!(left_in && right_in)) {
-                logger->error("激光线端点超出四边形ROI边界: left_y={}, right_y={}", pt1_roi.y, pt2_roi.y);
+                logger->error("The laser line endpoint exceeds the ROI boundary: left_y={}, right_y={}", pt1_roi.y, pt2_roi.y);
                 result.status = DetectionResultCode::OUT_OF_ROI;
                 return result;
             }
@@ -567,16 +529,16 @@ namespace LidarLineDetector {
             std::string fileName = generateFileName(outputDir + "/result", sn);
             if (cv::imwrite(fileName, resultImage))
             {
-                logger->info("检测结果图像已保存: {}", fileName);
+                logger->info("Image saved successfully: {}", fileName);
                 result.image_path = fileName;
             }
             else
             {
-                logger->error("保存图像失败: {}", fileName);
+                logger->error("Image saved failed: {}", fileName);
             }
         }
         result.status = DetectionResultCode::SUCCESS;
-        logger->info("四边形ROI激光线检测成功，角度: {:.2f}°，点数: {}, RMS: {:.2f}, 长度: {:.2f}", 
+        logger->info("Quad ROI laser line detection successful, angle: {:.2f}°, number of points: {}, RMS: {:.2f}, length: {:.2f}", 
                     lineAngle * 180.0 / CV_PI, laserPoints.size(), rms, length);
         return result;
     }
@@ -584,8 +546,8 @@ namespace LidarLineDetector {
     // 激光线检测主函数
     LidarLineResult detect(const cv::Mat &image, const std::string &configPath, const std::string &sn, const std::string &outputDir)
     {
-        logger->info("\n===================================================================");
-        logger->info("开始主检测流程");
+        logger->info("\n===============================================================================");
+        logger->info("Start lidar line detection, sn: {}", sn);
         LidarLineResult result{false, 0, "", DetectionResultCode::SUCCESS};
         
         // 首先尝试读取四边形ROI配置
@@ -594,12 +556,12 @@ namespace LidarLineDetector {
         
         if (quadRoiResult == DetectionResultCode::SUCCESS)
         {
-            logger->info("使用四边形ROI进行检测");
+            logger->info("Use quadrilateral ROI for detection");
             LidarDetectionResult detectionResult = detectLidarLineWithQuadROI(image, quadRoi, sn, outputDir);
             
             if (detectionResult.status != DetectionResultCode::SUCCESS)
             {
-                logger->error("主检测流程：四边形ROI激光线检测失败，错误码: {}", static_cast<int>(detectionResult.status));
+                logger->error("Quad ROI laser line detection failed, Error Code: {}", static_cast<int>(detectionResult.status));
                 result.error_code = detectionResult.status;
                 return result;
             }
@@ -611,13 +573,13 @@ namespace LidarLineDetector {
         }
         else
         {
-            logger->info("四边形ROI配置读取失败，尝试矩形ROI配置");
+            logger->info("Quad ROI configuration read failed, try rectangle ROI configuration");
             // 回退到矩形ROI
             ROI roi;
             DetectionResultCode roiResult = readROIFromConfig(configPath, roi);
             if (roiResult != DetectionResultCode::SUCCESS)
             {
-                logger->error("主检测流程：读取ROI配置失败，错误码: {}", static_cast<int>(roiResult));
+                logger->error("ROI configuration read failed, Error Code: {}", static_cast<int>(roiResult));
                 result.error_code = roiResult;
                 return result;
             }
@@ -626,7 +588,7 @@ namespace LidarLineDetector {
 
             if (detectionResult.status != DetectionResultCode::SUCCESS)
             {
-                logger->error("主检测流程：激光线检测失败，状态: {}", static_cast<int>(detectionResult.status));
+                logger->error("Rectangle ROI laser line detection failed, Error Code: {}", static_cast<int>(detectionResult.status));
                 result.error_code = detectionResult.status;
                 return result;
             }
@@ -638,6 +600,7 @@ namespace LidarLineDetector {
         }
     }
 } // namespace LidarLineDetector
+
 
 // 封装类实现
 DetectionResultCode CLidarLineDetector::initialize(const char *configPath)

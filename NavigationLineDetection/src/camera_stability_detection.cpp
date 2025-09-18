@@ -16,11 +16,12 @@ namespace CameraStabilityDetection {
     // 标靶配置文件 读取
     DetectionResultCode loadTargetConfig(const string &configPath, LidarLineDetector::TargetConfig &config)
     {
-        logger->info("开始读取标靶配置文件: {}", configPath);
+        logger->info("\n===============================================================================");
+        logger->info("Start reading camera config file: {}", configPath);
         ifstream file(configPath);
         if (!file.is_open())
         {
-            logger->error("无法打开配置文件: {}", configPath);
+            logger->error("Unable to open camera config file: {}", configPath);
             return DetectionResultCode::CONFIG_LOAD_FAILED;
         }
 
@@ -36,7 +37,7 @@ namespace CameraStabilityDetection {
                 }
                 else
                 {
-                    logger->error("解析 center_x 失败: {}", line);
+                    logger->error("Failed to parse center_x: {}", line);
                 }
             }
             else if (line.find("center_y:") == 0)
@@ -47,7 +48,7 @@ namespace CameraStabilityDetection {
                 }
                 else
                 {
-                    logger->error("解析 center_y 失败: {}", line);
+                    logger->error("Failed to parse center_y: {}", line);
                 }
             }
             else if (line.find("tolerance:") == 0)
@@ -58,7 +59,7 @@ namespace CameraStabilityDetection {
                 }
                 else
                 {
-                    logger->error("解析 tolerance 失败: {}", line);
+                    logger->error("Failed to parse tolerance: {}", line);
                 }
             }
         }
@@ -66,11 +67,12 @@ namespace CameraStabilityDetection {
 
         if (!centerRead || !toleranceRead)
         {
-            logger->error("配置文件格式错误，未读取到完整信息。");
+            logger->error("The config file format is incorrect and the complete information was not read");
+            return DetectionResultCode::CONFIG_LOAD_FAILED;
         }
         
         if (centerRead && toleranceRead) {
-            logger->info("标靶配置读取成功: center=({:.1f}, {:.1f}), tolerance={:.1f}", 
+            logger->info("Camera config read successfully: center=({:.2f}, {:.2f}), tolerance={:.2f}", 
                         config.expected_center.x, config.expected_center.y, config.tolerance);
             return DetectionResultCode::SUCCESS;
         } else {
@@ -80,7 +82,7 @@ namespace CameraStabilityDetection {
 
     // 检测标靶四个角落的黑色方块
     bool detectTarget(const Mat& image, vector<Point2f>& corners, Mat& displayImage) {
-        logger->info("开始检测标靶四个角落的黑色方块");
+        logger->info("black squares detect start");
         Mat gray, binary;
         cvtColor(image, gray, COLOR_BGR2GRAY);
         threshold(gray, binary, 80, 255, THRESH_BINARY_INV);
@@ -117,7 +119,7 @@ namespace CameraStabilityDetection {
         }
         
         if (centers.size() != 4) {
-            logger->error("未能检测到4个标靶方块，找到: {}", centers.size());
+            logger->error("Failed to detect 4 black squares, found: {} squares", centers.size());
             cv::putText(displayImage, "Target Detection Failed: " + std::to_string(centers.size()) + " targets found", 
                        cv::Point(20, 30), cv::FONT_HERSHEY_SIMPLEX, 0.7, cv::Scalar(0, 0, 255), 2);
             return false;
@@ -131,7 +133,7 @@ namespace CameraStabilityDetection {
         if (centers[2].x > centers[3].x) swap(centers[2], centers[3]);
         
         corners = centers;
-        logger->info("成功检测到4个标靶方块");
+        logger->info("black squares detect end, found 4 black squares");
         return true;
     }
 
@@ -146,7 +148,7 @@ namespace CameraStabilityDetection {
     // 标靶中心点检测
     DetectionResultCode detectTargetCenter(const Mat &image, Point2f &outCenter, Mat &displayImage)
     {
-        logger->info("开始标靶中心点检测");
+        logger->info("target surface center detect start");
         displayImage = image.clone();
         
         vector<Point2f> corners;
@@ -156,35 +158,32 @@ namespace CameraStabilityDetection {
         
         outCenter = calculateTargetCenter(corners);
         if (outCenter.x < 0 || outCenter.y < 0) {
-            logger->error("计算标靶中心点失败");
+            logger->error("Failed to calculate target center, center coordinates: ({:.2f}, {:.2f})", outCenter.x, outCenter.y);
             cv::putText(displayImage, "Center Calculation Failed", 
                        cv::Point(20, 60), cv::FONT_HERSHEY_SIMPLEX, 0.7, cv::Scalar(0, 0, 255), 2);
             return DetectionResultCode::CAMERA_SELF_CHECK_FAILED;
         }
         
-        // 在显示图像上绘制中心点
-        circle(displayImage, outCenter, 10, Scalar(0, 0, 255), -1);
-        circle(displayImage, outCenter, 15, Scalar(0, 0, 255), 2);
+        circle(displayImage, outCenter, 10, Scalar(0, 255, 0), -1);
         
-        logger->info("标靶中心点检测成功: ({:.1f}, {:.1f})", outCenter.x, outCenter.y);
+        logger->info("target surface center detect end, center coordinates: ({:.2f}, {:.2f})", outCenter.x, outCenter.y);
         return DetectionResultCode::SUCCESS;
     }
 
     // 相机自检函数
     TargetMovementResult_C checkCameraMovement(const Mat &image, const LidarLineDetector::TargetConfig &config, Mat &displayImage)
     {
-        logger->info("开始相机移动检测");
+        logger->info("camera movement detect start");
         // 修复：显式转换枚举类型
         TargetMovementResult_C result{0, 0, 0, 0, static_cast<int>(DetectionResultCode::SUCCESS), ""};
         Point2f currentCenter;
-        DetectionResultCode err = detectTargetCenter(image, currentCenter, displayImage);
-        if (err != DetectionResultCode::SUCCESS)
+        DetectionResultCode detect_result = detectTargetCenter(image, currentCenter, displayImage);
+        if (detect_result != DetectionResultCode::SUCCESS)
         {
-            result.error_code = static_cast<int>(err);
-            snprintf(result.message, sizeof(result.message), "标靶检测失败: %d", result.error_code);
-            logger->error("标靶检测失败，错误码: {}", result.error_code);
+            result.error_code = static_cast<int>(detect_result);
+            logger->error("Target surface detection failed, error code: {}", result.error_code);
             // 在显示图像上标注失败原因
-            cv::putText(displayImage, "Target Detection Failed", cv::Point(20, 60), cv::FONT_HERSHEY_SIMPLEX, 0.7, cv::Scalar(0, 0, 255), 2);
+            cv::putText(displayImage, "Target surface Detection Failed", cv::Point(20, 60), cv::FONT_HERSHEY_SIMPLEX, 0.7, cv::Scalar(0, 0, 255), 2);
             return result;
         }
 
@@ -196,16 +195,16 @@ namespace CameraStabilityDetection {
         result.is_stable = (result.distance <= config.tolerance);
 
         snprintf(result.message, sizeof(result.message),
-                 result.is_stable ? "相机稳定，偏差: %.1fpx" : "相机移动！偏差: %.1fpx (>%.1fpx)",
+                 result.is_stable ? "camera is stable, distance: %.1fpx" : "camera is moved, distance: %.1fpx (>%.1fpx)",
                  result.distance, result.distance, config.tolerance);
 
         // 在显示图像上绘制检测结果
-        circle(displayImage, config.expected_center, (int)config.tolerance, Scalar(255, 0, 0), 2);
+        circle(displayImage, config.expected_center, (int)config.tolerance, Scalar(0, 0, 255), 2);
         line(displayImage, config.expected_center, currentCenter, Scalar(0, 255, 255), 2);
-        putText(displayImage, result.message, Point(20, 30), FONT_HERSHEY_SIMPLEX, 0.7, Scalar(0, 255, 0), 2);
+        putText(displayImage, result.message, Point(20, 30), FONT_HERSHEY_SIMPLEX, 0.7, Scalar(0, 0, 255), 2);
 
-        logger->info("相机移动检测完成: {} (距离: {:.1f}px)", 
-                    result.is_stable ? "稳定" : "移动", result.distance);
+        logger->info("Camera self-test completed: {} (distance: {:.1f}px)", 
+                    result.is_stable ? "stable" : "moved", result.distance);
         return result;
     }
 
@@ -217,7 +216,8 @@ namespace CameraStabilityDetection {
         if (err != DetectionResultCode::SUCCESS) {
             TargetMovementResult_C result{};
             result.error_code = static_cast<int>(err);
-            snprintf(result.message, sizeof(result.message), "配置文件读取失败: %d", result.error_code);
+            snprintf(result.message, sizeof(result.message), "Failed to load target config, error code: %d", result.error_code);
+            logger->error("Failed to load target config, error code: {}", result.error_code);
             return result;
         }
         
@@ -242,13 +242,13 @@ namespace CameraStabilityDetection {
             
             std::string fileName = outputDir + "/camera_check_" + timeStr + ".jpg";
             if (cv::imwrite(fileName, displayImage)) {
-                logger->info("相机自检结果图像已保存: {}", fileName);
+                logger->info("Camera self-test image saved: {}", fileName);
                 // 将保存的文件路径添加到结果消息中
                 std::string originalMessage = result.message;
-                snprintf(result.message, sizeof(result.message), "%s | 图像: %s", 
+                snprintf(result.message, sizeof(result.message), "%s | image: %s", 
                         originalMessage.c_str(), fileName.c_str());
             } else {
-                logger->error("保存相机自检图像失败: {}", fileName);
+                logger->error("Failed to save camera self-test image: {}", fileName);
             }
         }
         

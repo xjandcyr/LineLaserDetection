@@ -159,8 +159,8 @@ int main() {
                 // 保存标定数据
                 CameraCalibration calibration;
                 calibration.target_center = center;
-                if (calibration.saveToFile("config/camera_calibration.txt")) {
-                    cout << "相机标定成功，数据已保存到 ../config/camera_calibration.txt" << endl;
+                if (calibration.saveToFile("../config/camera_calibration.txt")) {
+                    cout << "相机标定成功，数据已保存到 config/camera_calibration.txt" << endl;
                     
                     // 在图像上绘制角点和中心点
                     Mat resultImage = image.clone();
