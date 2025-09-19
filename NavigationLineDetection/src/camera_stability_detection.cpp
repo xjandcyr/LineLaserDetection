@@ -86,19 +86,24 @@ namespace CameraStabilityDetection {
         Mat gray, binary;
         cvtColor(image, gray, COLOR_BGR2GRAY);
         threshold(gray, binary, 80, 255, THRESH_BINARY_INV);
-        
+
         // 形态学操作去噪
         Mat kernel = getStructuringElement(MORPH_RECT, Size(5, 5));
         morphologyEx(binary, binary, MORPH_OPEN, kernel);
         morphologyEx(binary, binary, MORPH_CLOSE, kernel);
-        
+
         vector<vector<Point>> contours;
         findContours(binary, contours, RETR_EXTERNAL, CHAIN_APPROX_SIMPLE);
         
         vector<Point2f> centers;
         for (const auto& contour : contours) {
             double area = contourArea(contour);
-            if (area < 2000 || area > 50000) continue;
+
+            // 4个黑色方块的面积都为8000左右
+            if (area < 5000 || area > 10000)
+            {
+                continue;
+            }
 
             vector<Point> approx;
             approxPolyDP(contour, approx, arcLength(contour, true) * 0.02, true);
@@ -117,6 +122,9 @@ namespace CameraStabilityDetection {
                 }
             }
         }
+
+        // 显示所有的contours
+        drawContours(displayImage, contours, -1, Scalar(255, 0, 0), 1.5);
         
         if (centers.size() != 4) {
             logger->error("Failed to detect 4 black squares, found: {} squares", centers.size());
