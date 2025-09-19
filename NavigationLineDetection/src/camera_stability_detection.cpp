@@ -11,7 +11,7 @@ using namespace std;
 // 相机自检相关功能实现
 namespace CameraStabilityDetection {
 
-    static std::shared_ptr<spdlog::logger> logger = spdlog::basic_logger_mt("camera_logger", "./log/camera_stability_detection.log");
+    static std::shared_ptr<spdlog::logger> logger = spdlog::basic_logger_mt("camera_logger", "./navLine_log/camera_stability_detection.log");
 
     // 标靶配置文件 读取
     DetectionResultCode loadTargetConfig(const string &configPath, LidarLineDetector::TargetConfig &config)
