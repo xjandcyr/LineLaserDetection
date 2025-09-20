@@ -19,7 +19,7 @@ int main() {
     }
     
     // 直接调用新版接口，自动处理四边形ROI配置
-    std::string roiConfigPath = "../config/ROI_CONFIG.ini";
+    std::string roiConfigPath = "../config/NavLineCheckRoi.yml";
     LidarLineDetector::LidarLineResult result = LidarLineDetector::detect(testImage, roiConfigPath, "123456", "../output");
     if (result.error_code == DetectionResultCode::SUCCESS) {
         std::cout << "[激光线检测] sucess: " << static_cast<int>(result.error_code)<< std::endl;
@@ -38,7 +38,7 @@ int main() {
         return 1;
     }
     // 新接口：直接传入配置文件路径和输出目录，图片保存直接在函数内部进行
-    TargetMovementResult_C moveResult = CameraStabilityDetection::checkCameraMovement(cameraImage, "../config/CAMERA_CALIBRATION.ini", "../output");
+    TargetMovementResult_C moveResult = CameraStabilityDetection::checkCameraMovement(cameraImage, "../config/SelfCheckCenterPoint.yml", "../output");
     if (moveResult.error_code == static_cast<int>(DetectionResultCode::SUCCESS)) {
         std::cout << "[相机移动检测] " << (moveResult.is_stable ? "未移动" : "已移动")
                   << "，移动距离: " << std::fixed << std::setprecision(2) << moveResult.distance << " 像素" << std::endl;

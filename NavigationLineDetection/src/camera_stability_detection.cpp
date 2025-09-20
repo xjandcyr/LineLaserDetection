@@ -16,67 +16,51 @@ namespace CameraStabilityDetection {
     // 标靶配置文件 读取
     DetectionResultCode loadTargetConfig(const string &configPath, LidarLineDetector::TargetConfig &config)
     {
-        logger->info("Start reading camera config file: {}", configPath);
-        ifstream file(configPath);
-        if (!file.is_open())
-        {
-            logger->error("Unable to open camera config file: {}", configPath);
-            return DetectionResultCode::CONFIG_LOAD_FAILED;
-        }
-
-        string line;
-        bool centerRead = false, toleranceRead = false;
-        while (getline(file, line))
-        {
-            if (line.find("center_x:") == 0)
-            {
-                if (sscanf(line.c_str(), "center_x: %f", &config.expected_center.x) == 1)
-                {
-                    centerRead = true;
-                }
-                else
-                {
-                    logger->error("Failed to parse center_x: {}", line);
-                }
-            }
-            else if (line.find("center_y:") == 0)
-            {
-                if (sscanf(line.c_str(), "center_y: %f", &config.expected_center.y) == 1)
-                {
-                    centerRead = true;
-                }
-                else
-                {
-                    logger->error("Failed to parse center_y: {}", line);
-                }
-            }
-            else if (line.find("tolerance:") == 0)
-            {
-                if (sscanf(line.c_str(), "tolerance: %f", &config.tolerance) == 1)
-                {
-                    toleranceRead = true;
-                }
-                else
-                {
-                    logger->error("Failed to parse tolerance: {}", line);
-                }
-            }
-        }
-        file.close();
-
-        if (!centerRead || !toleranceRead)
-        {
-            logger->error("The config file format is incorrect and the complete information was not read");
+        cv::FileStorage fs(configPath, cv::FileStorage::READ);
+        
+        // 检查文件是否成功打开
+        if (!fs.isOpened()) {
+            logger->error("Failed to open config file: {}", configPath);
             return DetectionResultCode::CONFIG_LOAD_FAILED;
         }
         
-        if (centerRead && toleranceRead) {
-            logger->info("Camera config read successfully: center=({:.2f}, {:.2f}), tolerance={:.2f}", 
-                        config.expected_center.x, config.expected_center.y, config.tolerance);
-            return DetectionResultCode::SUCCESS;
-        } else {
+        // 读取SelfCheckCenterPoint节点
+        cv::FileNode centerNode = fs["SelfCheckCenterPoint"];
+        if (centerNode.empty()) {
+            logger->error("SelfCheckCenterPoint node not found in config file: {}", configPath);
+            fs.release();
             return DetectionResultCode::CONFIG_LOAD_FAILED;
         }
+        
+        // 读取中心点坐标
+        float center_x, center_y;
+        if (centerNode["center_x"].empty() || centerNode["center_y"].empty()) {
+            logger->error("Center coordinates (center_x or center_y) not found in config file");
+            fs.release();
+            return DetectionResultCode::CONFIG_LOAD_FAILED;
+        }
+        
+        // 提取坐标值（YAML中的字符串需要转换为浮点数）
+        center_x = std::stof((std::string)centerNode["center_x"]);
+        center_y = std::stof((std::string)centerNode["center_y"]);
+        
+        // 赋值给config结构体
+        config.expected_center = cv::Point2f(center_x, center_y);
+        
+        // 读取容差值
+        if (!centerNode["tolerance"].empty()) {
+            config.tolerance = (float)centerNode["tolerance"];
+        } else {
+            // 如果YAML中没有提供tolerance，设置一个默认值
+            config.tolerance = 10.0f; // 默认容差值
+            logger->info("Tolerance not found in config, using default value: {}", config.tolerance);
+        }
+        
+        fs.release();
+        logger->info("Successfully loaded target configuration: center=({}, {}), tolerance={}", 
+                    config.expected_center.x, config.expected_center.y, config.tolerance);
+        
+        return DetectionResultCode::SUCCESS;
     }
 
     // 检测标靶四个角落的黑色方块
@@ -215,7 +199,7 @@ namespace CameraStabilityDetection {
         return result;
     }
 
-    // 新接口：只传图片和配置文件路径，图片保存直接在函数内部进行
+    // 只传图片和配置文件路径，图片保存直接在函数内部进行
     TargetMovementResult_C checkCameraMovement(const Mat &image, const std::string &configPath, const std::string &outputDir)
     {
         logger->info("\n===============================================================================");
