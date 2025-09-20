@@ -145,14 +145,15 @@ bool saveROIToFile(const Rect& roi, const string& filePath) {
 // 保存四边形ROI到文件
 bool saveQuadROIToFile(const QuadROI& quadRoi, const string& keyName, const string& filePath) {
     FileStorage fs(filePath, FileStorage::WRITE);
-    // 如果该路径下没有这个文件
-    if (!fs.isOpened()) return false;
+    if (!fs.isOpened()) {
+        return false; // 文件打开失败
+    }
     
     fs << keyName << "[";
     for (const auto& point : quadRoi.points) {
         fs << "{:" 
-           << "x" << point.x 
-           << "y" << point.y 
+           << "x" << static_cast<int>(point.x)
+           << "y" << static_cast<int>(point.y)
            << "}";
     }
     fs << "]";

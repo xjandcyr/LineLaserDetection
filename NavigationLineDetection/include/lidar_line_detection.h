@@ -27,7 +27,7 @@
 // ============================================================================
 // 错误码和状态定义
 // ============================================================================
-enum class DetectionResultCode {
+enum DetectionResultCode {
     SUCCESS = 0,                    // 检测成功
     NOT_FOUND = 1,                  // 检测不到线
     OUT_OF_ROI = 2,                 // 线不在ROI范围内
@@ -127,7 +127,8 @@ namespace LidarLineDetector {
     };
 
     // 激光线检测结果结构体
-    struct LidarDetectionResult {
+    struct LidarDetectionResult
+    {
         DetectionResultCode status;   // 检测状态/错误码
         float line_angle;             // 检测到的线的角度（仅SUCCESS时有效）
         std::string image_path;       // 结果图像路径

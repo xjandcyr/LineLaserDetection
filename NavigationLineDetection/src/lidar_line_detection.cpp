@@ -100,6 +100,15 @@ namespace LidarLineDetector {
     DetectionResultCode readQuadROIFromConfig(const string &configPath, QuadROI &quadRoi)
     {
         logger->info("ROI configuration path: {}", configPath);
+        FileStorage fs(configPath, cv::FileStorage::READ);
+        // 读取以下信息：
+        // NavLineCheckRoi:
+        //   - { x:462., y:510. }
+        //   - { x:1742., y:541. }
+        //   - { x:1743., y:589. }
+        //   - { x:462., y:575. }
+        
+
         ifstream configFile(configPath);
         if (!configFile.is_open())
         {
@@ -222,7 +231,7 @@ namespace LidarLineDetector {
     // 使用四边形ROI的激光线检测核心函数
     LidarDetectionResult detectLidarLineWithQuadROI(const cv::Mat& image, const QuadROI& quadRoi, const std::string& sn, const std::string& outputDir)
     {
-        logger->info("Start laser line detection within the quadrilateral ROI");
+        logger->info("Start laser line detection within the ROI");
         LidarDetectionResult result;
         result.status = DetectionResultCode::NOT_FOUND;
         result.line_angle = 0.0f;
