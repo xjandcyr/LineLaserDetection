@@ -101,59 +101,47 @@ namespace LidarLineDetector {
     {
         logger->info("ROI configuration path: {}", configPath);
         FileStorage fs(configPath, cv::FileStorage::READ);
-        // 读取以下信息：
-        // NavLineCheckRoi:
-        //   - { x:462., y:510. }
-        //   - { x:1742., y:541. }
-        //   - { x:1743., y:589. }
-        //   - { x:462., y:575. }
-        
 
-        ifstream configFile(configPath);
-        if (!configFile.is_open())
-        {
-            logger->error("ROI config file path is invalid: {}", configPath);
-            perror("error message");
+        // 打开YAML配置文件
+        if (!fs.isOpened()) {
+            logger->error("Failed to open config file: {}", configPath);
             return DetectionResultCode::CONFIG_LOAD_FAILED;
         }
 
-        string line;
-        bool x1Read = false, x2Read = false, x3Read = false, x4Read = false;
-
-        while (getline(configFile, line))
-        {
-            // 跳过注释行和空行
-            if (line.empty() || line[0] == '#')
-                continue;
-
-            if (line.find("X1:") == 0)
-            {
-                if (sscanf(line.c_str(), "X1: %d, %d", &quadRoi.points[0].x, &quadRoi.points[0].y) == 2)
-                    x1Read = true;
-            }
-            else if (line.find("X2:") == 0)
-            {
-                if (sscanf(line.c_str(), "X2: %d, %d", &quadRoi.points[1].x, &quadRoi.points[1].y) == 2)
-                    x2Read = true;
-            }
-            else if (line.find("X3:") == 0)
-            {
-                if (sscanf(line.c_str(), "X3: %d, %d", &quadRoi.points[2].x, &quadRoi.points[2].y) == 2)
-                    x3Read = true;
-            }
-            else if (line.find("X4:") == 0)
-            {
-                if (sscanf(line.c_str(), "X4: %d, %d", &quadRoi.points[3].x, &quadRoi.points[3].y) == 2)
-                    x4Read = true;
-            }
-        }
-        configFile.close();
-
-        if (!x1Read || !x2Read || !x3Read || !x4Read)
-        {
-            logger->error("Quad ROI configuration reading is incomplete");
+        // 读取NavLineCheckRoi节点
+        cv::FileNode roiNode = fs["NavLineCheckRoi"];
+        if (roiNode.empty()) {
+            logger->error("NavLineCheckRoi node not found or empty in config file: {}", configPath);
+            fs.release();
             return DetectionResultCode::CONFIG_LOAD_FAILED;
         }
+
+        // 检查是否是序列且包含恰好4个点
+        if (roiNode.type() != cv::FileNode::SEQ || roiNode.size() != 4) {
+            logger->error("NavLineCheckRoi must be a sequence with exactly 4 points");
+            fs.release();
+            return DetectionResultCode::CONFIG_LOAD_FAILED;
+        }
+
+        // 遍历序列中的四个点
+        for (int i = 0; i < 4; ++i) {
+            cv::FileNode pointNode = roiNode[i];
+            // 检查点节点是否包含x和y字段
+            if (pointNode["x"].empty() || pointNode["y"].empty()) {
+                logger->error("Point at index {} is missing x or y coordinate", i);
+                fs.release();
+            }
+            
+            // 读取x和y坐标值
+            int x = (int)pointNode["x"];
+            int y = (int)pointNode["y"];
+            // 赋值给QuadROI结构
+            quadRoi.points[i] = cv::Point(x, y);
+            logger->info("Loaded point {}: ({}, {})", i, x, y);
+        }
+
+        fs.release();
+        logger->info("Successfully loaded ROI configuration");
 
         // 验证四边形是否有效（简单的面积检查）
         double area = 0;
@@ -164,14 +152,13 @@ namespace LidarLineDetector {
             area -= quadRoi.points[j].x * quadRoi.points[i].y;
         }
         area = abs(area) / 2.0;
-
         if (area < 100) // 最小面积阈值
         {
             logger->error("The quadrilateral ROI area is too small: {}", area);
             return DetectionResultCode::ROI_INVALID;
         }
 
-        logger->info("Quad ROI config read successfully: X1({},{}), X2({},{}), X3({},{}), X4({},{})", 
+        logger->info("Quad ROI config read successfully: P1({},{}), P2({},{}), P3({},{}), P4({},{})", 
                     quadRoi.points[0].x, quadRoi.points[0].y,
                     quadRoi.points[1].x, quadRoi.points[1].y,
                     quadRoi.points[2].x, quadRoi.points[2].y,

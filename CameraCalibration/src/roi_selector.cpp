@@ -143,25 +143,23 @@ bool saveROIToFile(const Rect& roi, const string& filePath) {
 
 
 // 保存四边形ROI到文件
-bool saveQuadROIToFile(const QuadROI& quadRoi, const string& keyName, const string& filePath) {
-    FileStorage fs(filePath, FileStorage::WRITE);
+bool saveQuadROIToFileAsMap(const QuadROI& quadRoi, const std::string& keyName, const std::string& filePath) {
+    cv::FileStorage fs(filePath, cv::FileStorage::WRITE);
     if (!fs.isOpened()) {
-        return false; // 文件打开失败
+        return false;
     }
     
-    fs << keyName << "[";
-    for (const auto& point : quadRoi.points) {
-        fs << "{:" 
-           << "x" << static_cast<int>(point.x)
-           << "y" << static_cast<int>(point.y)
-           << "}";
+    fs << keyName << "{"; // 开始一个映射
+    const std::vector<std::string> pointNames = {"top_left", "top_right", "bottom_right", "bottom_left"}; // 给每个点起个名字
+    for (size_t i = 0; i < quadRoi.points.size() && i < pointNames.size(); ++i) {
+        fs << pointNames[i] << "{:" << "x" << static_cast<int>(std::round(quadRoi.points[i].x))
+                            << "y" << static_cast<int>(std::round(quadRoi.points[i].y)) << "}";
     }
-    fs << "]";
+    fs << "}";
     
     fs.release();
     return true;
 }
-
 // 从文件加载矩形ROI
 bool loadROIFromFile(Rect& roi, const string& filePath) {
     ifstream file(filePath);

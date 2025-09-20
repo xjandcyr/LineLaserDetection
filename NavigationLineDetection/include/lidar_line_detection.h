@@ -123,7 +123,7 @@ namespace LidarLineDetector {
 
     // 四边形ROI结构体
     struct QuadROI {
-        cv::Point2i points[4];  // 四个坐标点，按顺时针或逆时针顺序
+        cv::Point points[4];  // 四个坐标点，按顺时针或逆时针顺序
     };
 
     // 激光线检测结果结构体
