@@ -48,54 +48,6 @@ namespace LidarLineDetector {
         return LIDAR_LINE_DETECTION_VERSION_PATCH;
     }
 
-    // 读取ROI配置文件
-    DetectionResultCode readROIFromConfig(const string &configPath, ROI &roi)
-    {
-        logger->info("Load ROI configuration file:{}", configPath);
-        ifstream configFile(configPath);
-        if (!configFile.is_open())
-        {
-            logger->error("Unable to open ROI config file: {}", configPath);
-            perror("error message"); // 打印系统错误信息
-            return DetectionResultCode::CONFIG_LOAD_FAILED;
-        }
-
-        string line;
-        bool xRead = false, yRead = false, widthRead = false, heightRead = false;
-
-        while (getline(configFile, line))
-        {
-            if (line.find("x:") == 0)
-            {
-                sscanf(line.c_str(), "x: %d", &roi.x);
-                xRead = true;
-            }
-            else if (line.find("y:") == 0)
-            {
-                sscanf(line.c_str(), "y: %d", &roi.y);
-                yRead = true;
-            }
-            else if (line.find("width:") == 0)
-            {
-                sscanf(line.c_str(), "width: %d", &roi.width);
-                widthRead = true;
-            }
-            else if (line.find("height:") == 0)
-            {
-                sscanf(line.c_str(), "height: %d", &roi.height);
-                heightRead = true;
-            }
-        }
-        configFile.close();
-
-        if (!xRead || !yRead || !widthRead || !heightRead)
-            return DetectionResultCode::CONFIG_LOAD_FAILED;
-        if (roi.width <= 0 || roi.height <= 0)
-            return DetectionResultCode::ROI_INVALID;
-        logger->info("ROI config loaded successfully: x={}, y={}, w={}, h={}", roi.x, roi.y, roi.width, roi.height);
-        return DetectionResultCode::SUCCESS;
-    }
-
     // 读取四边形ROI配置文件
     DetectionResultCode readQuadROIFromConfig(const string &configPath, QuadROI &quadRoi)
     {

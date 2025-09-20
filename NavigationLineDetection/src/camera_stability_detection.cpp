@@ -16,7 +16,6 @@ namespace CameraStabilityDetection {
     // 标靶配置文件 读取
     DetectionResultCode loadTargetConfig(const string &configPath, LidarLineDetector::TargetConfig &config)
     {
-        logger->info("\n===============================================================================");
         logger->info("Start reading camera config file: {}", configPath);
         ifstream file(configPath);
         if (!file.is_open())
@@ -219,6 +218,7 @@ namespace CameraStabilityDetection {
     // 新接口：只传图片和配置文件路径，图片保存直接在函数内部进行
     TargetMovementResult_C checkCameraMovement(const Mat &image, const std::string &configPath, const std::string &outputDir)
     {
+        logger->info("\n===============================================================================");
         LidarLineDetector::TargetConfig config;
         DetectionResultCode err = loadTargetConfig(configPath, config);
         if (err != DetectionResultCode::SUCCESS) {
