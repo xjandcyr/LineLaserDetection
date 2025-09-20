@@ -173,8 +173,6 @@ namespace LidarLineDetector {
     // ------------------------------------------------------------------------
     // 激光线检测核心函数
     // ------------------------------------------------------------------------
-    LidarDetectionResult detectLidarLine(const cv::Mat& image, const ROI& roi, 
-                                        const std::string& sn, const std::string& outputDir);
     LidarDetectionResult detectLidarLineWithQuadROI(const cv::Mat& image, const QuadROI& quadRoi, 
                                                    const std::string& sn, const std::string& outputDir);
     LidarLineResult detect(const cv::Mat& image, const std::string& configPath, 
