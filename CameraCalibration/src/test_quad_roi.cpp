@@ -123,8 +123,10 @@ int main() {
     imshow("示例四边形ROI", sampleImage);
     
     // 保存示例四边形ROI
-    if (saveQuadROIToFile(sampleQuadRoi, "sample_quad_roi.txt")) {
+    if (saveQuadROIToFile(sampleQuadRoi, "NavLineCheckRoi", "sample_quad_roi.txt")) {
         cout << "示例四边形ROI已保存到 sample_quad_roi.txt" << endl;
+    } else {
+        cout << "保存示例四边形ROI失败！" << endl;
     }
 
     cout << "按ESC键退出..." << endl;

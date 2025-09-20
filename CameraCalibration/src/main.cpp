@@ -64,8 +64,8 @@ int main() {
     }
     
     cout << "请选择ROI类型：" << endl;
-    cout << "1. 矩形ROI" << endl;
-    cout << "2. 四边形ROI" << endl;
+    cout << "1. 相机自检ROI" << endl;
+    cout << "2. 导航线检测ROI" << endl;
     cout << "3. 相机标定" << endl;
     cout << "请输入选择 (1-3): ";
     
@@ -74,39 +74,13 @@ int main() {
     
     switch (choice) {
         case 1: {
-            // 矩形ROI选择
-            cout << "选择矩形ROI..." << endl;
-            Rect roi = selectROIFromImage(image, "Select RectROI");
-            if (roi.width > 0 && roi.height > 0) {
-                cout << "已选择矩形ROI: x=" << roi.x << ", y=" << roi.y 
-                     << ", w=" << roi.width << ", h=" << roi.height << endl;
-                
-                // 绘制矩形ROI
-                Mat resultImage = image.clone();
-                rectangle(resultImage, roi, Scalar(0, 255, 0), 2);
-                imshow("RectROI Result", resultImage);
-                
-                if (saveROIToFile(roi, "rect_roi.txt")) {
-                    cout << "矩形ROI已保存到 rect_roi.txt" << endl;
-                } else {
-                    cout << "保存矩形ROI失败！" << endl;
-                }
-                
-                waitKey(0);
-            } else {
-                cout << "未选择有效矩形ROI。" << endl;
-            }
-            break;
-        }
-
-        case 2: {
-            // 四边形ROI选择
-            cout << "选择四边形ROI..." << endl;
-            cout << "请点击4个点来定义四边形，按ESC取消选择" << endl;
+            // 相机自检ROI选择
+            cout << "选择相机自检ROI区域" << endl;
+            cout << "请点击4个点来定义自检区域，按ESC取消选择" << endl;
             
             QuadROI quadRoi = selectQuadROIFromImage(image, "Select QuadROI");
             if (quadRoi.isValid()) {
-                cout << "已选择四边形ROI，顶点坐标：" << endl;
+                cout << "已选择相机自检ROI区域，顶点坐标：" << endl;
                 for (size_t i = 0; i < quadRoi.points.size(); ++i) {
                     cout << "点" << (i+1) << ": (" << quadRoi.points[i].x 
                          << ", " << quadRoi.points[i].y << ")" << endl;
@@ -121,10 +95,61 @@ int main() {
                 drawQuadROI(resultImage, quadRoi, Scalar(0, 255, 0), 2);
                 imshow("QuadROI Result", resultImage);
                 
-                if (saveQuadROIToFile(quadRoi, "../config/quad_roi.txt")) {
-                    cout << "四边形ROI已保存到 config/quad_roi.txt" << endl;
+                // 修改调用处的路径格式
+                if (saveQuadROIToFile(quadRoi, "CameraSelfCheckRoi", "../../config/CameraSelfCheckRoi.yml"))
+                {
+                    cout << "相机自检ROI已保存到 config/CameraSelfCheckRoi.yml" << endl;
                 } else {
-                    cout << "保存四边形ROI失败！" << endl;
+                    cout << "保存相机自检ROI失败！" << endl;
+                }
+                
+                // 演示点检测功能
+                cout << "点击图像上的任意位置测试点是否在四边形内..." << endl;
+                namedWindow("Test", WINDOW_NORMAL);                 // 修改为可调整大小的窗口类型
+                resizeWindow("Test", WINDOW_WIDTH, WINDOW_HEIGHT);  // 设置窗口尺寸
+                
+                // 设置全局变量供回调函数使用
+                g_testImage = image.clone();
+                g_testQuadRoi = quadRoi;
+                
+                setMouseCallback("Test", onMouseTest);
+                
+                // 显示测试窗口
+                resizeWindow("Test", WINDOW_WIDTH, WINDOW_HEIGHT);
+                imshow("Test", resultImage);
+                waitKey(0);
+            } else {
+                cout << "未选择有效四边形ROI。" << endl;
+            }
+            break;
+        }
+
+        case 2: {
+            // 导航线检测ROI选择
+            cout << "选择导航线检测ROI区域" << endl;
+            cout << "请点击4个点来定义检测区域，按ESC取消选择" << endl;
+            
+            QuadROI quadRoi = selectQuadROIFromImage(image, "Select QuadROI");
+            if (quadRoi.isValid()) {
+                cout << "已选择导航线检测ROI区域，顶点坐标：" << endl;
+                for (size_t i = 0; i < quadRoi.points.size(); ++i) {
+                    cout << "点" << (i+1) << ": (" << quadRoi.points[i].x 
+                         << ", " << quadRoi.points[i].y << ")" << endl;
+                }
+                cout << "外接矩形: x=" << quadRoi.boundingBox.x 
+                     << ", y=" << quadRoi.boundingBox.y 
+                     << ", w=" << quadRoi.boundingBox.width 
+                     << ", h=" << quadRoi.boundingBox.height << endl;
+                
+                // 绘制四边形ROI
+                Mat resultImage = image.clone();
+                drawQuadROI(resultImage, quadRoi, Scalar(0, 255, 0), 2);
+                imshow("QuadROI Result", resultImage);
+                
+                if (saveQuadROIToFile(quadRoi, "NavLineCheckRoi", "../../config/NavLineCheckRoi.yml")) {
+                    cout << "导航线检测ROI已保存到 config/NavLineCheckRoi.yml" << endl;
+                } else {
+                    cout << "保存导航线检测ROI失败！" << endl;
                 }
                 
                 // 演示点检测功能
@@ -159,8 +184,8 @@ int main() {
                 // 保存标定数据
                 CameraCalibration calibration;
                 calibration.target_center = center;
-                if (calibration.saveToFile("../config/camera_calibration.txt")) {
-                    cout << "相机标定成功，数据已保存到 config/camera_calibration.txt" << endl;
+                if (calibration.savePointToFile("../../config/SelfCheckCenterPoint.yml")) {
+                    cout << "相机标定成功，数据已保存到 config/SelfCheckCenterPoint.yml" << endl;
                     
                     // 在图像上绘制角点和中心点
                     Mat resultImage = image.clone();

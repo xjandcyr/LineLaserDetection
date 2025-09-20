@@ -43,7 +43,8 @@ QuadROI selectQuadROIFromImage(const cv::Mat& image, const std::string& windowNa
 
 // 保存ROI区域到文件
 bool saveROIToFile(const cv::Rect& roi, const std::string& filePath);
-bool saveQuadROIToFile(const QuadROI& quadRoi, const std::string& filePath);
+bool saveQuadROIToFile(const QuadROI& quadRoi, const std::string& keyName, const std::string& filePath);
+
 
 // 从文件加载ROI区域
 bool loadROIFromFile(cv::Rect& roi, const std::string& filePath);

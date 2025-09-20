@@ -6,19 +6,16 @@ using namespace cv;
 using namespace std;
 
 // CameraCalibration实现
-bool CameraCalibration::saveToFile(const string& filePath) const {
-    try {
-        ofstream file(filePath);
-        if (!file.is_open()) return false;
-        file << "center_x: " << target_center.x << endl;
-        file << "center_y: " << target_center.y << endl;
-        file << "tolerance: " << max_deviation << endl;
-        file.close();
-        return true;
-    } catch (const exception& e) {
-        cerr << "保存标定文件失败: " << e.what() << endl;
-        return false;
-    }
+bool CameraCalibration::savePointToFile(const string& filePath)
+{
+    cv::FileStorage fs(filePath, cv::FileStorage::WRITE);
+    if (!fs.isOpened()) return false;
+    fs << "SelfCheckCenterPoint" << "{";
+    fs << "center_x" << cv::format("%.2f", target_center.x);
+    fs << "center_y" << cv::format("%.2f", target_center.y);
+    fs << "}";
+    fs.release();
+    return true;
 }
 
 bool CameraCalibration::loadFromFile(const string& filePath) {

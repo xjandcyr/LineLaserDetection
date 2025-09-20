@@ -127,17 +127,37 @@ bool saveROIToFile(const Rect& roi, const string& filePath) {
 }
 
 // 保存四边形ROI到文件
-bool saveQuadROIToFile(const QuadROI& quadRoi, const string& filePath) {
-    ofstream file(filePath);
-    if (!file.is_open()) return false;
+// bool saveQuadROIToFile(const QuadROI& quadRoi, const string& filePath) {
+//     ofstream file(filePath);
+//     if (!file.is_open()) return false;
     
-    file << "QUAD_ROI" << endl; // 文件标识
-    // 修改输出格式为带坐标标签的样式
-    for (int i = 0; i < 4; ++i) {
-        file << "X" << (i+1) << ": " << quadRoi.points[i].x 
-             << ", " << quadRoi.points[i].y << endl;
+//     // file << "QUAD_ROI" << endl; // 文件标识
+//     // 修改输出格式为带坐标标签的样式
+//     for (int i = 0; i < 4; ++i) {
+//         file << "X" << (i+1) << ": " << quadRoi.points[i].x 
+//              << ", " << quadRoi.points[i].y << endl;
+//     }
+//     file.close();
+//     return true;
+// }
+
+
+// 保存四边形ROI到文件
+bool saveQuadROIToFile(const QuadROI& quadRoi, const string& keyName, const string& filePath) {
+    FileStorage fs(filePath, FileStorage::WRITE);
+    // 如果该路径下没有这个文件
+    if (!fs.isOpened()) return false;
+    
+    fs << keyName << "[";
+    for (const auto& point : quadRoi.points) {
+        fs << "{:" 
+           << "x" << point.x 
+           << "y" << point.y 
+           << "}";
     }
-    file.close();
+    fs << "]";
+    
+    fs.release();
     return true;
 }
 

@@ -10,7 +10,7 @@
 struct CameraCalibration {
     cv::Point2d target_center;
     double max_deviation = 5.0;
-    bool saveToFile(const std::string& filePath) const;
+    bool savePointToFile(const std::string& filePath);
     bool loadFromFile(const std::string& filePath);
 };
 
