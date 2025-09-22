@@ -69,7 +69,7 @@ namespace CameraStabilityDetection {
 
         Mat gray, binary;
         cvtColor(image, gray, COLOR_BGR2GRAY);
-        threshold(gray, binary, 80, 255, THRESH_BINARY_INV);
+        threshold(gray, binary, 60, 255, THRESH_BINARY_INV);
 
         std::vector<std::vector<cv::Point>> contours;
         cv::findContours(binary, contours, cv::RETR_LIST, cv::CHAIN_APPROX_SIMPLE);
@@ -80,27 +80,24 @@ namespace CameraStabilityDetection {
         vector<Point2f> centers;
         for (const auto& contour : contours) {
             double area = contourArea(contour);
-
+            
             // 4个黑色方块的面积都为9000左右
             if (area < 5000 || area > 13000)
             {
                 continue;
             }
 
-            vector<Point> approx;
-            approxPolyDP(contour, approx, arcLength(contour, true) * 0.02, true);
-            if (approx.size() == 4 && isContourConvex(approx)) {
-                Rect rect = boundingRect(approx);
-                double aspect = (double)rect.width / rect.height;
-                if (aspect > 0.8 && aspect < 1.2) {
-                    Moments m = moments(contour);
-                    if (m.m00 != 0) {
-                        Point2f center(m.m10/m.m00, m.m01/m.m00);
-                        centers.push_back(center);
-                        // 在显示图像上绘制检测到的方块
-                        circle(displayImage, center, 8, Scalar(0, 255, 0), 2);
-                        rectangle(displayImage, rect, Scalar(0, 255, 0), 2);
-                    }
+            Rect rect = boundingRect(contour);
+            double aspect = (double)rect.width / rect.height;
+
+            if (aspect > 0.8 && aspect < 1.2) {
+                Moments m = moments(contour);
+                if (m.m00 != 0) {
+                    Point2f center(m.m10/m.m00, m.m01/m.m00);
+                    centers.push_back(center);
+                    // 在显示图像上绘制检测到的方块
+                    circle(displayImage, center, 8, Scalar(0, 255, 0), 2);
+                    rectangle(displayImage, rect, Scalar(0, 255, 0), 2);
                 }
             }
         }
