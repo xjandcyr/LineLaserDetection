@@ -81,8 +81,8 @@ namespace CameraStabilityDetection {
         for (const auto& contour : contours) {
             double area = contourArea(contour);
 
-            // 4个黑色方块的面积都为8000左右
-            if (area < 5000 || area > 10000)
+            // 4个黑色方块的面积都为9000左右
+            if (area < 5000 || area > 13000)
             {
                 continue;
             }
@@ -92,7 +92,7 @@ namespace CameraStabilityDetection {
             if (approx.size() == 4 && isContourConvex(approx)) {
                 Rect rect = boundingRect(approx);
                 double aspect = (double)rect.width / rect.height;
-                if (aspect > 0.7 && aspect < 1.3) {
+                if (aspect > 0.8 && aspect < 1.2) {
                     Moments m = moments(contour);
                     if (m.m00 != 0) {
                         Point2f center(m.m10/m.m00, m.m01/m.m00);
