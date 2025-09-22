@@ -283,7 +283,7 @@ namespace LidarLineDetector {
         logger->info("Navigation laser line length: {}, ROI Width: {}", length, roiWidth);
 
         // 阈值可根据实际调整
-        if (length < roiWidth * 0.97)
+        if (length < roiWidth * 0.9)
         {
             logger->error("Navigation laser line length: {}, ROI Width: {}", length, roiWidth);
             string failMsg = "The length is too short, length: " + std::to_string(length);
