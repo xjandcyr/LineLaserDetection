@@ -90,7 +90,6 @@ namespace LidarLineDetector {
             int y = (int)pointNode["y"];
             // 赋值给QuadROI结构
             quadRoi.points[i] = cv::Point(x, y);
-            logger->info("Loaded point {}: ({}, {})", i, x, y);
         }
 
         fs.release();
@@ -286,7 +285,7 @@ namespace LidarLineDetector {
         // 阈值可根据实际调整
         if (length < roiWidth * 0.97)
         {
-            logger->info("Navigation laser line length: {}, ROI Width: {}", length, roiWidth);
+            logger->error("Navigation laser line length: {}, ROI Width: {}", length, roiWidth);
             string failMsg = "The length is too short, length: " + std::to_string(length);
             saveResultImage(image, failMsg, sn, quadRoi, outputDir, result);
             result.status = DetectionResultCode::NOT_FOUND;

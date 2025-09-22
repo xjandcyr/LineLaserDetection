@@ -11,25 +11,25 @@ int main() {
               << LidarLineDetector::getVersionMinor() << "."
               << LidarLineDetector::getVersionPatch() << std::endl;
 
-    // // 激光线检测
-    // cv::Mat testImage = cv::imread("../image/111.jpg");
-    // if (testImage.empty()) {
-    //     std::cout << "[错误] 无法加载激光线测试图像" << std::endl;
-    //     return 1;
-    // }
+    // 激光线检测
+    cv::Mat testImage = cv::imread("../image/111.jpg");
+    if (testImage.empty()) {
+        std::cout << "[错误] 无法加载激光线测试图像" << std::endl;
+        return 1;
+    }
     
-    // // 直接调用新版接口，自动处理四边形ROI配置
-    // std::string roiConfigPath = "../config/NavLineCheckRoi.yml";
-    // LidarLineDetector::LidarLineResult result = LidarLineDetector::detect(testImage, roiConfigPath, "123456", "../output");
-    // if (result.error_code == DetectionResultCode::SUCCESS) {
-    //     std::cout << "[激光线检测] sucess: " << static_cast<int>(result.error_code)<< std::endl;
-    // } else {
-    //     std::cout << "[激光线检测] 失败，错误码: " << static_cast<int>(result.error_code);
-    //     if (!result.image_path.empty()) {
-    //         std::cout << "\n  失败图像: " << result.image_path;
-    //     }
-    //     std::cout << std::endl;
-    // }
+    // 直接调用新版接口，自动处理四边形ROI配置
+    std::string roiConfigPath = "../config/NavLineCheckRoi.yml";
+    LidarLineDetector::LidarLineResult result = LidarLineDetector::detect(testImage, roiConfigPath, "123456", "../output");
+    if (result.error_code == DetectionResultCode::SUCCESS) {
+        std::cout << "[激光线检测] sucess: " << static_cast<int>(result.error_code)<< std::endl;
+    } else {
+        std::cout << "[激光线检测] 失败，错误码: " << static_cast<int>(result.error_code);
+        if (!result.image_path.empty()) {
+            std::cout << "\n  失败图像: " << result.image_path;
+        }
+        std::cout << std::endl;
+    }
 
     // 相机移动检测
     cv::Mat cameraImage = cv::imread("../image/111.jpg");

@@ -44,33 +44,38 @@ bool CameraCalibration::loadFromFile(const string& filePath) {
     }
 }
 
+
+
 // 检测标靶四个角落的黑色方块
 bool detectTarget(const Mat& image, vector<Point2f>& corners) {
     Mat gray, binary;
     cvtColor(image, gray, COLOR_BGR2GRAY);
     threshold(gray, binary, 80, 255, THRESH_BINARY_INV);
-    Mat kernel = getStructuringElement(MORPH_RECT, Size(5, 5));
-    morphologyEx(binary, binary, MORPH_OPEN, kernel);
-    morphologyEx(binary, binary, MORPH_CLOSE, kernel);
-    vector<vector<Point>> contours;
-    findContours(binary, contours, RETR_EXTERNAL, CHAIN_APPROX_SIMPLE);
+
+    std::vector<std::vector<cv::Point>> contours;
+    cv::findContours(binary, contours, cv::RETR_LIST, cv::CHAIN_APPROX_SIMPLE);
+    
     vector<Point2f> centers;
     for (const auto& contour : contours) {
         double area = contourArea(contour);
-        if (area < 2000 || area > 50000) continue;
-        vector<Point> approx;
-        approxPolyDP(contour, approx, arcLength(contour, true) * 0.02, true);
-        if (approx.size() == 4 && isContourConvex(approx)) {
-            Rect rect = boundingRect(approx);
-            double aspect = (double)rect.width / rect.height;
-            if (aspect > 0.7 && aspect < 1.3) {
-                Moments m = moments(contour);
-                if (m.m00 != 0) {
-                    centers.push_back(Point2f(m.m10/m.m00, m.m01/m.m00));
-                }
+        
+        // 4个黑色方块的面积都为9000左右
+        if (area < 5000 || area > 13000)
+        {
+            continue;
+        }
+
+        Rect rect = boundingRect(contour);
+        double aspect = (double)rect.width / rect.height;
+
+        if (aspect > 0.8 && aspect < 1.2) {
+            Moments m = moments(contour);
+            if (m.m00 != 0) {
+                centers.push_back(Point2f(m.m10/m.m00, m.m01/m.m00));
             }
         }
     }
+    
     if (centers.size() != 4) {
         cerr << "未能检测到4个标靶方块，找到: " << centers.size() << endl;
         return false;

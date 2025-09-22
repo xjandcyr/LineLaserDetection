@@ -69,7 +69,7 @@ namespace CameraStabilityDetection {
 
         Mat gray, binary;
         cvtColor(image, gray, COLOR_BGR2GRAY);
-        threshold(gray, binary, 60, 255, THRESH_BINARY_INV);
+        threshold(gray, binary, 80, 255, THRESH_BINARY_INV);
 
         std::vector<std::vector<cv::Point>> contours;
         cv::findContours(binary, contours, cv::RETR_LIST, cv::CHAIN_APPROX_SIMPLE);
@@ -198,17 +198,13 @@ namespace CameraStabilityDetection {
         result.distance = sqrt(dx * dx + dy * dy);
         result.is_stable = (result.distance <= target_center.tolerance);
 
-        snprintf(result.message, sizeof(result.message),
-                 result.is_stable ? "camera is stable, distance: %.1fpx" : "camera is moved, distance: %.1fpx (>%.1fpx)",
-                 result.distance, result.distance, target_center.tolerance);
-
         // 在显示图像上绘制检测结果
         circle(displayImage, target_center.expected_center, (int)target_center.tolerance, Scalar(0, 0, 255), 2);
         line(displayImage, target_center.expected_center, currentCenter, Scalar(0, 255, 255), 2);
         putText(displayImage, result.message, Point(20, 30), FONT_HERSHEY_SIMPLEX, 1.2, Scalar(0, 0, 255), 2);
 
-        logger->info("Camera self-test completed: {} (distance: {:.1f}px)", 
-                    result.is_stable ? "stable" : "moved", result.distance);
+        logger->info("Camera self-test completed: {} (distance: {:.1f}px), tolerance: {:.1f}px", 
+                    result.is_stable ? "stable" : "moved", result.distance, target_center.tolerance);
         return result;
     }
 

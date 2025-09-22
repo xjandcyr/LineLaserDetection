@@ -127,19 +127,23 @@ bool saveROIToFile(const Rect& roi, const string& filePath) {
 }
 
 // 保存四边形ROI到文件
-// bool saveQuadROIToFile(const QuadROI& quadRoi, const string& filePath) {
-//     ofstream file(filePath);
-//     if (!file.is_open()) return false;
+bool saveQuadROIToFile(const QuadROI& quadRoi, const std::string& keyName, const std::string& filePath) {
+    cv::FileStorage fs(filePath, cv::FileStorage::WRITE);
+    if (!fs.isOpened()) return false;
     
-//     // file << "QUAD_ROI" << endl; // 文件标识
-//     // 修改输出格式为带坐标标签的样式
-//     for (int i = 0; i < 4; ++i) {
-//         file << "X" << (i+1) << ": " << quadRoi.points[i].x 
-//              << ", " << quadRoi.points[i].y << endl;
-//     }
-//     file.close();
-//     return true;
-// }
+    // 写入四边形ROI的点坐标（修正后的正确写法）
+    fs << keyName << "[";
+    for (const auto& point : quadRoi.points) {
+        fs << "{:" 
+           << "x" << static_cast<int>(std::round(point.x))
+           << "y" << static_cast<int>(std::round(point.y)) 
+           << "}";
+    }
+    fs << "]";
+    
+    fs.release();
+    return true;
+}
 
 
 // 保存四边形ROI到文件
