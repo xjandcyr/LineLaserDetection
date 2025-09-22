@@ -57,7 +57,7 @@ namespace CameraStabilityDetection {
         }
         
         fs.release();
-        logger->info("Successfully loaded target configuration: center=({}, {}), tolerance={}", 
+        logger->info("Successfully loaded target config: center=({}, {}), tolerance={}", 
                     config.expected_center.x, config.expected_center.y, config.tolerance);
         
         return DetectionResultCode::SUCCESS;
@@ -66,17 +66,16 @@ namespace CameraStabilityDetection {
     // 检测标靶四个角落的黑色方块
     bool detectTarget(const Mat& image, vector<Point2f>& corners, Mat& displayImage) {
         logger->info("black squares detect start");
+
         Mat gray, binary;
         cvtColor(image, gray, COLOR_BGR2GRAY);
         threshold(gray, binary, 80, 255, THRESH_BINARY_INV);
 
-        // 形态学操作去噪
-        Mat kernel = getStructuringElement(MORPH_RECT, Size(5, 5));
-        morphologyEx(binary, binary, MORPH_OPEN, kernel);
-        morphologyEx(binary, binary, MORPH_CLOSE, kernel);
+        std::vector<std::vector<cv::Point>> contours;
+        cv::findContours(binary, contours, cv::RETR_LIST, cv::CHAIN_APPROX_SIMPLE);
 
-        vector<vector<Point>> contours;
-        findContours(binary, contours, RETR_EXTERNAL, CHAIN_APPROX_SIMPLE);
+        // 找所有的轮廓
+        drawContours(displayImage, contours, -1, Scalar(255, 0, 0), 2);
         
         vector<Point2f> centers;
         for (const auto& contour : contours) {
@@ -105,9 +104,6 @@ namespace CameraStabilityDetection {
                 }
             }
         }
-
-        // 显示所有的contours
-        drawContours(displayImage, contours, -1, Scalar(255, 0, 0), 1.5);
         
         if (centers.size() != 4) {
             logger->error("Failed to detect 4 black squares, found: {} squares", centers.size());
@@ -137,13 +133,31 @@ namespace CameraStabilityDetection {
     }
 
     // 标靶中心点检测
-    DetectionResultCode detectTargetCenter(const Mat &image, Point2f &outCenter, Mat &displayImage)
+    DetectionResultCode detectTargetCenter(const Mat &image, Point2f &outCenter, const LidarLineDetector::QuadROI &quadRoi, Mat &displayImage)
     {
         logger->info("target surface center detect start");
         displayImage = image.clone();
+
+        // 创建四边形ROI的掩码
+        cv::Mat mask = cv::Mat::zeros(image.size(), CV_8UC1);
+        std::vector<cv::Point> quadPoints;
+        for (int i = 0; i < 4; i++)
+        {
+            quadPoints.push_back(quadRoi.points[i]);
+        }
+        cv::fillPoly(mask, std::vector<std::vector<cv::Point>>{quadPoints}, cv::Scalar(255));
+
+        // 提取ROI区域
+        cv::Mat roiMat;
+        image.copyTo(roiMat, mask);
+        if (roiMat.empty())
+        {
+            logger->error("Failed to extract the quadrilateral ROI area, ROI is empty");
+            return DetectionResultCode::ROI_INVALID;
+        }
         
         vector<Point2f> corners;
-        if (!detectTarget(image, corners, displayImage)) {
+        if (!detectTarget(roiMat, corners, displayImage)) {
             return DetectionResultCode::CAMERA_SELF_CHECK_FAILED;
         }
         
@@ -162,13 +176,15 @@ namespace CameraStabilityDetection {
     }
 
     // 相机自检函数
-    TargetMovementResult_C checkCameraMovement(const Mat &image, const LidarLineDetector::TargetConfig &config, Mat &displayImage)
+    TargetMovementResult_C checkCameraMovement(const Mat &image, const LidarLineDetector::TargetConfig &target_center, 
+                                               const LidarLineDetector::QuadROI &quadRoi, Mat &displayImage)
     {
         logger->info("camera movement detect start");
         // 修复：显式转换枚举类型
         TargetMovementResult_C result{0, 0, 0, 0, static_cast<int>(DetectionResultCode::SUCCESS), ""};
         Point2f currentCenter;
-        DetectionResultCode detect_result = detectTargetCenter(image, currentCenter, displayImage);
+        DetectionResultCode detect_result = detectTargetCenter(image, currentCenter, quadRoi, displayImage);
+
         if (detect_result != DetectionResultCode::SUCCESS)
         {
             result.error_code = static_cast<int>(detect_result);
@@ -178,20 +194,20 @@ namespace CameraStabilityDetection {
             return result;
         }
 
-        float dx = currentCenter.x - config.expected_center.x;
-        float dy = currentCenter.y - config.expected_center.y;
+        float dx = currentCenter.x - target_center.expected_center.x;
+        float dy = currentCenter.y - target_center.expected_center.y;
         result.dx = dx;
         result.dy = dy;
         result.distance = sqrt(dx * dx + dy * dy);
-        result.is_stable = (result.distance <= config.tolerance);
+        result.is_stable = (result.distance <= target_center.tolerance);
 
         snprintf(result.message, sizeof(result.message),
                  result.is_stable ? "camera is stable, distance: %.1fpx" : "camera is moved, distance: %.1fpx (>%.1fpx)",
-                 result.distance, result.distance, config.tolerance);
+                 result.distance, result.distance, target_center.tolerance);
 
         // 在显示图像上绘制检测结果
-        circle(displayImage, config.expected_center, (int)config.tolerance, Scalar(0, 0, 255), 2);
-        line(displayImage, config.expected_center, currentCenter, Scalar(0, 255, 255), 2);
+        circle(displayImage, target_center.expected_center, (int)target_center.tolerance, Scalar(0, 0, 255), 2);
+        line(displayImage, target_center.expected_center, currentCenter, Scalar(0, 255, 255), 2);
         putText(displayImage, result.message, Point(20, 30), FONT_HERSHEY_SIMPLEX, 1.2, Scalar(0, 0, 255), 2);
 
         logger->info("Camera self-test completed: {} (distance: {:.1f}px)", 
@@ -200,22 +216,32 @@ namespace CameraStabilityDetection {
     }
 
     // 只传图片和配置文件路径，图片保存直接在函数内部进行
-    TargetMovementResult_C checkCameraMovement(const Mat &image, const std::string &configPath, const std::string &outputDir)
+    TargetMovementResult_C checkCameraMovement(const Mat &image, const std::string &centerConfigPath, 
+                                               const std::string &roiConfigPath, const std::string &outputDir)
     {
         logger->info("\n===============================================================================");
-        LidarLineDetector::TargetConfig config;
-        DetectionResultCode err = loadTargetConfig(configPath, config);
+        LidarLineDetector::TargetConfig target_center;
+        DetectionResultCode err = loadTargetConfig(centerConfigPath, target_center);
         if (err != DetectionResultCode::SUCCESS) {
             TargetMovementResult_C result{};
             result.error_code = static_cast<int>(err);
-            snprintf(result.message, sizeof(result.message), "Failed to load target config, error code: %d", result.error_code);
-            logger->error("Failed to load target config, error code: {}", result.error_code);
+            logger->error("Failed to load target center config, error code: {}", result.error_code);
+            return result;
+        }
+
+        LidarLineDetector::QuadROI quadRoi;
+        err = readQuadROIFromConfig(roiConfigPath, "CameraSelfCheckRoi", quadRoi);
+        if (err != DetectionResultCode::SUCCESS) {
+            TargetMovementResult_C result{};
+            result.error_code = static_cast<int>(err);
+            logger->error("Failed to load camera self check quad roi config, error code: {}", result.error_code);
             return result;
         }
         
         // 调用内部函数进行检测
         cv::Mat displayImage;
-        TargetMovementResult_C result = checkCameraMovement(image, config, displayImage);
+        TargetMovementResult_C result = checkCameraMovement(image, target_center, quadRoi, displayImage);
+
         
         // 如果指定了输出目录，保存图片
         if (!outputDir.empty() && !displayImage.empty()) {

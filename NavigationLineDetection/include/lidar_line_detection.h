@@ -160,8 +160,8 @@ namespace LidarLineDetector {
     // ------------------------------------------------------------------------
     // 配置文件读取函数
     // ------------------------------------------------------------------------
-    DetectionResultCode readROIFromConfig(const std::string& configPath, ROI& roi);
-    DetectionResultCode readQuadROIFromConfig(const std::string& configPath, QuadROI& quadRoi);
+    DetectionResultCode readQuadROIFromConfig(const std::string& configPath, const std::string& nodeName, QuadROI& quadRoi);
+
 
 // ------------------------------------------------------------------------
     // 工具函数
@@ -192,10 +192,12 @@ namespace CameraStabilityDetection {
     DetectionResultCode loadTargetConfig(const std::string& configPath, 
                                         LidarLineDetector::TargetConfig& config);
     DetectionResultCode detectTargetCenter(const cv::Mat& image, cv::Point2f& outCenter, 
-                                          cv::Mat& displayImage);
+                                           const LidarLineDetector::QuadROI& quadRoi,
+                                           cv::Mat& displayImage);
 // 相机移动检测（新接口：内部处理图像保存）
     TargetMovementResult_C checkCameraMovement(const cv::Mat& image, 
-                                              const std::string& configPath, 
+                                              const std::string& centerConfigPath, 
+                                              const std::string& roiConfigPath,
                                               const std::string& outputDir = "");
 
 } // namespace CameraStabilityDetection

@@ -49,7 +49,7 @@ namespace LidarLineDetector {
     }
 
     // 读取四边形ROI配置文件
-    DetectionResultCode readQuadROIFromConfig(const string &configPath, QuadROI &quadRoi)
+    DetectionResultCode readQuadROIFromConfig(const string &configPath, const string &nodeName, QuadROI &quadRoi)
     {
         logger->info("ROI configuration path: {}", configPath);
         FileStorage fs(configPath, cv::FileStorage::READ);
@@ -60,17 +60,18 @@ namespace LidarLineDetector {
             return DetectionResultCode::CONFIG_LOAD_FAILED;
         }
 
-        // 读取NavLineCheckRoi节点
-        cv::FileNode roiNode = fs["NavLineCheckRoi"];
+        // 读取节点
+        cv::FileNode roiNode = fs[nodeName];
         if (roiNode.empty()) {
-            logger->error("NavLineCheckRoi node not found or empty in config file: {}", configPath);
+            logger->error("{} node not found or empty in config file: {}", nodeName, configPath);
+
             fs.release();
             return DetectionResultCode::CONFIG_LOAD_FAILED;
         }
 
         // 检查是否是序列且包含恰好4个点
         if (roiNode.type() != cv::FileNode::SEQ || roiNode.size() != 4) {
-            logger->error("NavLineCheckRoi must be a sequence with exactly 4 points");
+            logger->error("{} node must be a sequence with exactly 4 points", nodeName);
             fs.release();
             return DetectionResultCode::CONFIG_LOAD_FAILED;
         }
@@ -93,7 +94,7 @@ namespace LidarLineDetector {
         }
 
         fs.release();
-        logger->info("Successfully loaded ROI configuration");
+        logger->info("Successfully loaded ROI config");
 
         // 验证四边形是否有效（简单的面积检查）
         double area = 0;
@@ -358,7 +359,8 @@ namespace LidarLineDetector {
         
         // 首先尝试读取四边形ROI配置
         QuadROI quadRoi;
-        DetectionResultCode quadRoiResult = readQuadROIFromConfig(configPath, quadRoi);
+        DetectionResultCode quadRoiResult = readQuadROIFromConfig(configPath, "NavLineCheckRoi", quadRoi);
+
         
         if (quadRoiResult == DetectionResultCode::SUCCESS)
         {
@@ -390,7 +392,7 @@ namespace LidarLineDetector {
 // 封装类实现
 DetectionResultCode CLidarLineDetector::initialize(const char *configPath)
 {
-    return LidarLineDetector::readQuadROIFromConfig(configPath, m_quadRoi);
+    return LidarLineDetector::readQuadROIFromConfig(configPath, "NavLineCheckRoi", m_quadRoi);
 }
 
 void CLidarLineDetector::setROI(int x, int y, int width, int height) { m_roi = {x, y, width, height}; }
