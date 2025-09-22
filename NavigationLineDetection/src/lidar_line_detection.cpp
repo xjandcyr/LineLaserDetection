@@ -360,7 +360,6 @@ namespace LidarLineDetector {
         // 首先尝试读取四边形ROI配置
         QuadROI quadRoi;
         DetectionResultCode quadRoiResult = readQuadROIFromConfig(configPath, "NavLineCheckRoi", quadRoi);
-
         
         if (quadRoiResult == DetectionResultCode::SUCCESS)
         {

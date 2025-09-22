@@ -52,7 +52,7 @@ namespace CameraStabilityDetection {
             config.tolerance = (float)centerNode["tolerance"];
         } else {
             // 如果YAML中没有提供tolerance，设置一个默认值
-            config.tolerance = 10.0f; // 默认容差值
+            config.tolerance = 5.0f; // 默认容差值
             logger->info("Tolerance not found in config, using default value: {}", config.tolerance);
         }
         
