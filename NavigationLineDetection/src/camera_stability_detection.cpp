@@ -234,7 +234,6 @@ namespace CameraStabilityDetection {
         // 调用内部函数进行检测
         cv::Mat displayImage;
         TargetMovementResult_C result = checkCameraMovement(image, target_center, quadRoi, displayImage);
-
         
         // 如果指定了输出目录，保存图片
         if (!outputDir.empty() && !displayImage.empty()) {
@@ -274,10 +273,10 @@ DetectionResultCode CLidarLineDetector::loadTargetConfig(const char *configPath,
     return CameraStabilityDetection::loadTargetConfig(configPath, config);
 }
 
-TargetMovementResult_C CLidarLineDetector::checkCameraStability(const TCMat_C image, const char* configPath)
+TargetMovementResult_C CLidarLineDetector::checkCameraStability(const TCMat_C image, std::string centerConfigPath, std::string roiConfigPath)
 {
     Mat image_cpp(image.rows, image.cols, image.type, image.data);
-    return CameraStabilityDetection::checkCameraMovement(image_cpp, std::string(configPath), m_outputDir);
+    return CameraStabilityDetection::checkCameraMovement(image_cpp, centerConfigPath, roiConfigPath, m_outputDir);
 }
 
 // C 接口实现 - 相机自检相关
@@ -296,8 +295,9 @@ extern "C"
         return err;
     }
 
-    Smpclass_API TargetMovementResult_C CLidarLineDetector_checkCameraStability(CLidarLineDetector *instance, const TCMat_C image, const char* configPath)
+    Smpclass_API TargetMovementResult_C CLidarLineDetector_checkCameraStability(CLidarLineDetector *instance, const TCMat_C image,
+                                                    const char* centerConfigPath, const char* roiConfigPath)
     {
-        return instance->checkCameraStability(image, configPath);
+        return instance->checkCameraStability(image, std::string(centerConfigPath), std::string(roiConfigPath));
     }
 }

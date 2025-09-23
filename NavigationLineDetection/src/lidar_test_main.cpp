@@ -20,7 +20,8 @@ int main() {
     
     // 直接调用新版接口，自动处理四边形ROI配置
     std::string roiConfigPath = "../config/NavLineCheckRoi.yml";
-    LidarLineDetector::LidarLineResult result = LidarLineDetector::detect(testImage, roiConfigPath, "123456", "../output");
+    LidarLineDetector::LidarLineResult result = LidarLineDetector::lineDetect(testImage, roiConfigPath, "123456", "../output", 5);
+
     if (result.error_code == DetectionResultCode::SUCCESS) {
         std::cout << "[激光线检测] sucess: " << static_cast<int>(result.error_code)<< std::endl;
     } else {

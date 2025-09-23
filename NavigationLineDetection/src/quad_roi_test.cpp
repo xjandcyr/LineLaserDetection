@@ -39,7 +39,8 @@ int main() {
 
     // 测试四边形ROI激光线检测
     std::string roiConfigPath = "D:\\OpenCV\\Code\\PV31\\config\\ROI_CONFIG.ini";
-    LidarLineDetector::LidarLineResult result = LidarLineDetector::detect(testImage, roiConfigPath, "QUAD_TEST", "D:/OpenCV/Code/PV31/output");
+    LidarLineDetector::LidarLineResult result = LidarLineDetector::lineDetect(testImage, roiConfigPath, "QUAD_TEST", "D:/OpenCV/Code/PV31/output", 5);
+
     
     if (result.error_code == DetectionResultCode::SUCCESS) {
         std::cout << "[四边形ROI激光线检测] 成功" << std::endl;

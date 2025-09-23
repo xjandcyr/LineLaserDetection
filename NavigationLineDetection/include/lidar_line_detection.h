@@ -176,8 +176,8 @@ namespace LidarLineDetector {
     // ------------------------------------------------------------------------
     LidarDetectionResult detectLidarLineWithQuadROI(const cv::Mat& image, const QuadROI& quadRoi, 
                                                    const std::string& sn, const std::string& outputDir);
-    LidarLineResult detect(const cv::Mat& image, const std::string& configPath, 
-                          const std::string& sn, const std::string& outputDir);
+    LidarLineResult lineDetect(const cv::Mat& image, const std::string& configPath, 
+                          const std::string& sn, const std::string& outputDir, int executionTimes);
 
 } // namespace LidarLineDetector
 
@@ -228,15 +228,17 @@ public:
 // ------------------------------------------------------------------------
     // 激光线检测函数
     // ------------------------------------------------------------------------
-    TLidarLineResult_C detect(const TCMat_C image, const char* configPath);
+    TLidarLineResult_C lineDetectToHostComputer(const TCMat_C image, const char* configPath, int executionTimes);
+
     
     // ------------------------------------------------------------------------
     // 相机自检相关方法
     // ------------------------------------------------------------------------
     DetectionResultCode loadTargetConfig(const char* configPath, 
                                         LidarLineDetector::TargetConfig& config);
-    TargetMovementResult_C checkCameraStability(const TCMat_C image, const char* configPath);
-    
+    TargetMovementResult_C checkCameraStability(const TCMat_C image, std::string centerConfigPath,
+                                        std::string roiConfigPath);
+
     // ------------------------------------------------------------------------
     // 版本信息接口
     // ------------------------------------------------------------------------
@@ -274,7 +276,8 @@ extern "C" {
     // ------------------------------------------------------------------------
     Smpclass_API TLidarLineResult_C CLidarLineDetector_detect(CLidarLineDetector* instance, 
                                                              const TCMat_C image, 
-                                                             const char* configPath);
+                                                             const char* configPath,
+                                                             int executionTimes);
 
 // ------------------------------------------------------------------------
     // 相机自检相关C接口
@@ -282,11 +285,10 @@ extern "C" {
     Smpclass_API DetectionResultCode CLidarLineDetector_loadTargetConfig(CLidarLineDetector* instance, 
                                                                         const char* configPath, 
                                                                         TTargetConfig_C* config);
-    Smpclass_API TargetMovementResult_C CLidarLineDetector_checkCameraMovement(CLidarLineDetector* instance, 
+    Smpclass_API TargetMovementResult_C CLidarLineDetector_checkCameraStability(CLidarLineDetector* instance, 
                                                                              const TCMat_C image, 
-                                                                             const char* configPath, 
-                                                                             const char* outputDir);
-    
+                                                                             const char* centerConfigPath,
+                                                                             const char* roiConfigPath);
     // ------------------------------------------------------------------------
     // 版本信息C接口
     // ------------------------------------------------------------------------

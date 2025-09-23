@@ -350,10 +350,12 @@ namespace LidarLineDetector {
     }
 
     // 激光线检测主函数
-    LidarLineResult detect(const cv::Mat &image, const std::string &configPath, const std::string &sn, const std::string &outputDir)
+    LidarLineResult lineDetect(const cv::Mat &image, const std::string &configPath, const std::string &sn,
+                                        const std::string &outputDir, int executionTimes)
     {
         logger->info("\n===============================================================================");
-        logger->info("Start lidar line detection, sn: {}", sn);
+        logger->info("Start lidar line detection, sn: {}, executionTimes: {}", sn, executionTimes);
+
         LidarLineResult result{false, 0, "", DetectionResultCode::SUCCESS};
         
         // 首先尝试读取四边形ROI配置
@@ -397,10 +399,10 @@ void CLidarLineDetector::setROI(int x, int y, int width, int height) { m_roi = {
 void CLidarLineDetector::setSn(const char *sn) { m_sn = sn ? sn : ""; }
 void CLidarLineDetector::setOutputDir(const char *outputDir) { m_outputDir = outputDir ? outputDir : ""; }
 
-TLidarLineResult_C CLidarLineDetector::detect(const TCMat_C image, const char* configPath)
+TLidarLineResult_C CLidarLineDetector::lineDetectToHostComputer(const TCMat_C image, const char* configPath, int executionTimes)
 {
     Mat image_cpp(image.rows, image.cols, image.type, image.data);
-    auto result = LidarLineDetector::detect(image_cpp, configPath, m_sn, m_outputDir);
+    auto result = LidarLineDetector::lineDetect(image_cpp, configPath, m_sn, m_outputDir, executionTimes);
 
     TLidarLineResult_C result_c;
     result_c.line_detected = result.line_detected;
@@ -469,9 +471,10 @@ extern "C"
         instance->setOutputDir(outputDir);
     }
 
-    Smpclass_API TLidarLineResult_C CLidarLineDetector_detect(CLidarLineDetector *instance, const TCMat_C image, const char* configPath)
+    Smpclass_API TLidarLineResult_C CLidarLineDetector_detect(CLidarLineDetector *instance, const TCMat_C image,
+                                                        const char* configPath, int executionTimes)
     {
-        return instance->detect(image, configPath);
+        return instance->lineDetectToHostComputer(image, configPath, executionTimes);
     }
 
 
