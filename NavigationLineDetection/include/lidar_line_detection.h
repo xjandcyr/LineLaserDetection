@@ -13,7 +13,7 @@
 // ============================================================================
 #define LIDAR_LINE_DETECTION_VERSION_MAJOR 1
 #define LIDAR_LINE_DETECTION_VERSION_MINOR 0
-#define LIDAR_LINE_DETECTION_VERSION_PATCH 6
+#define LIDAR_LINE_DETECTION_VERSION_PATCH 7
 
 // ============================================================================
 // 导出宏定义
