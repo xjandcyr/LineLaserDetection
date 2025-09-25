@@ -69,7 +69,7 @@ namespace CameraStabilityDetection {
 
         Mat gray, binary;
         cvtColor(image, gray, COLOR_BGR2GRAY);
-        threshold(gray, binary, 80, 255, THRESH_BINARY_INV);
+        threshold(gray, binary, 90, 255, THRESH_BINARY_INV);
 
         std::vector<std::vector<cv::Point>> contours;
         cv::findContours(binary, contours, cv::RETR_LIST, cv::CHAIN_APPROX_SIMPLE);
