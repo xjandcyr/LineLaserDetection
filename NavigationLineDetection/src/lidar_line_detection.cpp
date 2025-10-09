@@ -255,6 +255,7 @@ namespace LidarLineDetector {
         }
         double rms = std::sqrt(sumDist2 / laserPoints.size());
         logger->info("Navigation laser line RMS: {}", rms);
+        // 根据PV31量产的1400次标定数据，RMS误差绝大部分在2左右，最大为3.75，因此设置RMS阈值为5.0
         if (rms > 5.0) {
             logger->error("RMS is too high, RMS: {}", rms);
             string failMsg = "RMS is too high, RMS: " + std::to_string(rms);
