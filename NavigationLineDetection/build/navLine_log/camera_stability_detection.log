@@ -1,0 +1,11 @@
+[2025-10-16 15:04:02.498] [camera_logger] [info] 
+===============================================================================
+[2025-10-16 15:04:02.498] [camera_logger] [info] Tolerance not found in config, using default value: 5
+[2025-10-16 15:04:02.498] [camera_logger] [info] Successfully loaded target config: center=(1110.52, 559.24), tolerance=5
+[2025-10-16 15:04:02.498] [camera_logger] [info] camera movement detect start
+[2025-10-16 15:04:02.498] [camera_logger] [info] target surface center detect start
+[2025-10-16 15:04:02.501] [camera_logger] [info] black squares detect start
+[2025-10-16 15:04:02.506] [camera_logger] [error] Failed to detect 4 black squares, found: 2 squares
+[2025-10-16 15:04:02.506] [camera_logger] [error] Target surface detection failed, error code: 7
+[2025-10-16 15:04:02.532] [camera_logger] [info] Camera self-test image saved: ../output/camera_check_Thu_Oct_16_15_04_02_2025_.jpg
+ 
