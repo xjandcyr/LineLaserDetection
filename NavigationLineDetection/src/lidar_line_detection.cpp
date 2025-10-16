@@ -49,7 +49,7 @@ namespace LidarLineDetector {
     }
 
     // 读取四边形ROI配置文件
-    DetectionResultCode readQuadROIFromConfig(const string &configPath, const string &nodeName, QuadROI &quadRoi)
+    DetectionResultCode readQuadROIFromConfig(const string &configPath, const string &nodeName, QuadROI &quadRoi, string &moduleBrand)
     {
         logger->info("ROI configuration path: {}", configPath);
         FileStorage fs(configPath, cv::FileStorage::READ);
@@ -61,16 +61,32 @@ namespace LidarLineDetector {
         }
 
         // 读取节点
-        cv::FileNode roiNode = fs[nodeName];
-        if (roiNode.empty()) {
+        cv::FileNode checkModeNode = fs[nodeName];
+        if (checkModeNode.empty()) {
             logger->error("{} node not found or empty in config file: {}", nodeName, configPath);
+            fs.release();
+            return DetectionResultCode::CONFIG_LOAD_FAILED;
+        }
 
+        // 读取模组品牌 - 需要先进入quadRoi的父节点
+        cv::FileNode configNode = checkModeNode; // 这里对应配置文件中的NavLineCheckRoi节点
+        moduleBrand = (string)configNode["duaLineModuleBrand"];
+        if (moduleBrand.empty()) {
+            logger->error("duaLineModuleBrand node not found or empty in config file: {}", configPath);
+            fs.release();
+            return DetectionResultCode::CONFIG_LOAD_FAILED;
+        }
+
+        // 读取四边形ROI点坐标
+        cv::FileNode quadRoiNode = configNode["quadRoi"];
+        if (quadRoiNode.empty()) {
+            logger->error("quadRoi node not found or empty in config file: {}", configPath);
             fs.release();
             return DetectionResultCode::CONFIG_LOAD_FAILED;
         }
 
         // 检查是否是序列且包含恰好4个点
-        if (roiNode.type() != cv::FileNode::SEQ || roiNode.size() != 4) {
+        if (quadRoiNode.type() != cv::FileNode::SEQ || quadRoiNode.size() != 4) {
             logger->error("{} node must be a sequence with exactly 4 points", nodeName);
             fs.release();
             return DetectionResultCode::CONFIG_LOAD_FAILED;
@@ -78,7 +94,7 @@ namespace LidarLineDetector {
 
         // 遍历序列中的四个点
         for (int i = 0; i < 4; ++i) {
-            cv::FileNode pointNode = roiNode[i];
+            cv::FileNode pointNode = quadRoiNode[i];
             // 检查点节点是否包含x和y字段
             if (pointNode["x"].empty() || pointNode["y"].empty()) {
                 logger->error("Point at index {} is missing x or y coordinate", i);
@@ -168,9 +184,10 @@ namespace LidarLineDetector {
     }
 
     // 使用四边形ROI的激光线检测核心函数
-    LidarDetectionResult detectLidarLineWithQuadROI(const cv::Mat& image, const QuadROI& quadRoi, const std::string& sn, const std::string& outputDir)
+    LidarDetectionResult detectLidarLineWithQuadROI(const cv::Mat& image, const QuadROI& quadRoi, 
+                            const std::string& moduleBrand, const std::string& sn, const std::string& outputDir)
     {
-        logger->info("Start laser line detection within the ROI");
+        logger->info("Start laser line detection within the ROI, moduleBrand: {}", moduleBrand);
         LidarDetectionResult result;
         result.status = DetectionResultCode::NOT_FOUND;
         result.line_angle = 0.0f;
@@ -209,6 +226,21 @@ namespace LidarLineDetector {
             return result;
         }
 
+        // 定义亮度阈值和RMS阈值
+        float brightnessThreshold;
+        float rmsThreshold;
+        if(moduleBrand == "Piceacorp")      // 杉川自研模组
+        {
+            brightnessThreshold = 180.0f;
+            rmsThreshold = 10.0f;
+        }
+        else if(moduleBrand == "Camsense")  // 欢创模组
+        {
+            brightnessThreshold = 220.0f;
+            // 根据PV31量产的1400次标定数据，RMS误差绝大部分在2左右，最大为3.75，因此欢创模组设置RMS阈值为5.0
+            rmsThreshold = 5.0f;
+        }
+
         // 灰度化
         cv::Mat gray;
         cv::cvtColor(roiMat, gray, cv::COLOR_BGR2GRAY);
@@ -217,7 +249,7 @@ namespace LidarLineDetector {
         std::vector<cv::Point> laserPoints;
         for (int y = 0; y < gray.rows; ++y) {
             for (int x = 0; x < gray.cols; ++x) {
-                if (gray.at<uchar>(y, x) > 220) { // 阈值可调
+                if (gray.at<uchar>(y, x) > brightnessThreshold) {
                     laserPoints.emplace_back(x, y);
                 }
             }
@@ -255,9 +287,9 @@ namespace LidarLineDetector {
         }
         double rms = std::sqrt(sumDist2 / laserPoints.size());
         logger->info("Navigation laser line RMS: {}", rms);
-        // 根据PV31量产的1400次标定数据，RMS误差绝大部分在2左右，最大为3.75，因此设置RMS阈值为5.0
-        if (rms > 5.0) {
-            logger->error("RMS is too high, RMS: {}", rms);
+
+        if (rms > rmsThreshold) {
+            logger->error("RMS is too high, RMS: {}, rmsThreshold: {}", rms, rmsThreshold);
             string failMsg = "RMS is too high, RMS: " + std::to_string(rms);
             saveResultImage(image, failMsg, sn, quadRoi, outputDir, result);
             result.status = DetectionResultCode::NOT_FOUND;
@@ -361,12 +393,13 @@ namespace LidarLineDetector {
         
         // 首先尝试读取四边形ROI配置
         QuadROI quadRoi;
-        DetectionResultCode quadRoiResult = readQuadROIFromConfig(configPath, "NavLineCheckRoi", quadRoi);
+        std::string moduleBrand;
+        DetectionResultCode quadRoiResult = readQuadROIFromConfig(configPath, "NavLineCheckRoi", quadRoi, moduleBrand);
         
         if (quadRoiResult == DetectionResultCode::SUCCESS)
         {
             logger->info("Use quadrilateral ROI for detection");
-            LidarDetectionResult detectionResult = detectLidarLineWithQuadROI(image, quadRoi, sn, outputDir);
+            LidarDetectionResult detectionResult = detectLidarLineWithQuadROI(image, quadRoi, moduleBrand, sn, outputDir);
             
             if (detectionResult.status != DetectionResultCode::SUCCESS)
             {
@@ -391,9 +424,16 @@ namespace LidarLineDetector {
 
 
 // 封装类实现
+CLidarLineDetector::CLidarLineDetector()
+    : m_line_detect_brightness_threshold(180.0f),
+      m_line_detect_rms_threshold(10.0f)
+{
+}
+
 DetectionResultCode CLidarLineDetector::initialize(const char *configPath)
 {
-    return LidarLineDetector::readQuadROIFromConfig(configPath, "NavLineCheckRoi", m_quadRoi);
+    return LidarLineDetector::readQuadROIFromConfig(configPath, "NavLineCheckRoi", m_quadRoi, m_moduleBrand);
+
 }
 
 void CLidarLineDetector::setROI(int x, int y, int width, int height) { m_roi = {x, y, width, height}; }

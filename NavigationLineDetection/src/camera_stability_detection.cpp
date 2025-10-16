@@ -223,7 +223,8 @@ namespace CameraStabilityDetection {
         }
 
         LidarLineDetector::QuadROI quadRoi;
-        err = readQuadROIFromConfig(roiConfigPath, "CameraSelfCheckRoi", quadRoi);
+        std::string moduleBrand;
+        err = readQuadROIFromConfig(roiConfigPath, "CameraSelfCheckRoi", quadRoi, moduleBrand);
         if (err != DetectionResultCode::SUCCESS) {
             TargetMovementResult_C result{};
             result.error_code = static_cast<int>(err);

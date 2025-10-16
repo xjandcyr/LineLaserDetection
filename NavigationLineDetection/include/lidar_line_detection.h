@@ -160,7 +160,7 @@ namespace LidarLineDetector {
     // ------------------------------------------------------------------------
     // 配置文件读取函数
     // ------------------------------------------------------------------------
-    DetectionResultCode readQuadROIFromConfig(const std::string& configPath, const std::string& nodeName, QuadROI& quadRoi);
+    DetectionResultCode readQuadROIFromConfig(const std::string& configPath, const std::string& nodeName, QuadROI& quadRoi, std::string& moduleBrand);
 
 
 // ------------------------------------------------------------------------
@@ -174,7 +174,7 @@ namespace LidarLineDetector {
     // ------------------------------------------------------------------------
     // 激光线检测核心函数
     // ------------------------------------------------------------------------
-    LidarDetectionResult detectLidarLineWithQuadROI(const cv::Mat& image, const QuadROI& quadRoi, 
+    LidarDetectionResult detectLidarLineWithQuadROI(const cv::Mat& image, const QuadROI& quadRoi, const std::string& moduleBrand,
                                                    const std::string& sn, const std::string& outputDir);
     LidarLineResult lineDetect(const cv::Mat& image, const std::string& configPath, 
                           const std::string& sn, const std::string& outputDir, int executionTimes);
@@ -209,13 +209,16 @@ class CLidarLineDetector {
 private:
     LidarLineDetector::ROI m_roi;
     LidarLineDetector::QuadROI m_quadRoi;
+    std::string m_moduleBrand;
     std::string m_sn, m_outputDir;
+    float m_line_detect_brightness_threshold;
+    float m_line_detect_rms_threshold;
 
 public:
     // ------------------------------------------------------------------------
     // 构造函数和析构函数
     // ------------------------------------------------------------------------
-    CLidarLineDetector() = default;
+    CLidarLineDetector();
     ~CLidarLineDetector() = default;
 
     // ------------------------------------------------------------------------

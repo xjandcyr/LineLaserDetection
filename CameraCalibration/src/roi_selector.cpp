@@ -130,9 +130,11 @@ bool saveROIToFile(const Rect& roi, const string& filePath) {
 bool saveQuadROIToFile(const QuadROI& quadRoi, const std::string& keyName, const std::string& filePath) {
     cv::FileStorage fs(filePath, cv::FileStorage::WRITE);
     if (!fs.isOpened()) return false;
+
+    fs << keyName << "{";
     
     // 写入四边形ROI的点坐标（修正后的正确写法）
-    fs << keyName << "[";
+    fs << "quadRoi" << "[";
     for (const auto& point : quadRoi.points) {
         fs << "{:" 
            << "x" << static_cast<int>(std::round(point.x))
@@ -140,7 +142,12 @@ bool saveQuadROIToFile(const QuadROI& quadRoi, const std::string& keyName, const
            << "}";
     }
     fs << "]";
+
+    // 储存模组品牌
+    // fs << "duaLineModuleBrand" << "Camsense";     // 欢创模组
+    fs << "duaLineModuleBrand" << "Piceacorp";     // 杉川自研模组
     
+    fs << "}";
     fs.release();
     return true;
 }

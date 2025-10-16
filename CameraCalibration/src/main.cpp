@@ -96,7 +96,7 @@ int main() {
                 imshow("QuadROI Result", resultImage);
                 
                 // 修改调用处的路径格式
-                if (saveQuadROIToFile(quadRoi, "CameraSelfCheckRoi", "../../config/CameraSelfCheckRoi.yml"))
+                if (saveQuadROIToFile(quadRoi, "CameraSelfCheckRoi", "../config/CameraSelfCheckRoi.yml"))
                 {
                     cout << "相机自检ROI已保存到 config/CameraSelfCheckRoi.yml" << endl;
                 } else {
@@ -146,7 +146,7 @@ int main() {
                 drawQuadROI(resultImage, quadRoi, Scalar(0, 255, 0), 2);
                 imshow("QuadROI Result", resultImage);
                 
-                if (saveQuadROIToFile(quadRoi, "NavLineCheckRoi", "../../config/NavLineCheckRoi.yml")) {
+                if (saveQuadROIToFile(quadRoi, "NavLineCheckRoi", "../config/NavLineCheckRoi.yml")) {
                     cout << "导航线检测ROI已保存到 config/NavLineCheckRoi.yml" << endl;
                 } else {
                     cout << "保存导航线检测ROI失败！" << endl;
