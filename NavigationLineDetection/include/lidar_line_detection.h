@@ -211,8 +211,6 @@ private:
     LidarLineDetector::QuadROI m_quadRoi;
     std::string m_moduleBrand;
     std::string m_sn, m_outputDir;
-    float m_line_detect_brightness_threshold;
-    float m_line_detect_rms_threshold;
 
 public:
     // ------------------------------------------------------------------------

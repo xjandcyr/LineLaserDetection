@@ -425,8 +425,6 @@ namespace LidarLineDetector {
 
 // 封装类实现
 CLidarLineDetector::CLidarLineDetector()
-    : m_line_detect_brightness_threshold(180.0f),
-      m_line_detect_rms_threshold(10.0f)
 {
 }
 
