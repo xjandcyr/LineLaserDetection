@@ -1,7 +1,9 @@
 %YAML:1.0
 ---
 NavLineCheckRoi:
-   - { x:469, y:512 }
-   - { x:1737, y:541 }
-   - { x:1737, y:590 }
-   - { x:468, y:576 }
+   quadRoi:
+      - { x:469, y:512 }
+      - { x:1737, y:541 }
+      - { x:1737, y:590 }
+      - { x:468, y:576 }
+   duaLineModuleBrand: Piceacorp
