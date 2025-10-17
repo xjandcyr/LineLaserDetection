@@ -15,7 +15,7 @@ using namespace std;
 namespace LidarLineDetector {
 
     // 版本信息
-    static const char *versionString = "1.0.8";
+    static const char *versionString = "1.0.9";
 
     static std::shared_ptr<spdlog::logger> logger = spdlog::basic_logger_mt("lidar_logger", "./navLine_log/lidar_line_detection.log");
 
