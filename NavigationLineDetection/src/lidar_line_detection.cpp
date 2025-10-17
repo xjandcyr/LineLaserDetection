@@ -135,7 +135,7 @@ namespace LidarLineDetector {
     }
 
     // 生成带时间和SN的文件名
-    string generateFileName(const string &basePath, const string &sn)
+    string generateFileName(const string &outputDir, const string &state, const string &sn)
     {
         time_t now = time(0);
         char timeStr[26];
@@ -143,7 +143,7 @@ namespace LidarLineDetector {
         for (int i = 0; timeStr[i]; i++)
             if (timeStr[i] == ' ' || timeStr[i] == ':' || timeStr[i] == '\n')
                 timeStr[i] = '_';
-        return basePath + "_" + sn + "_" + timeStr + ".jpg";
+        return outputDir + "/" + sn + "_" + state + "_" + timeStr + ".jpg";
     }
 
     // 保存失败图像的函数
@@ -164,7 +164,7 @@ namespace LidarLineDetector {
             cv::putText(resultImage, message, cv::Point(20, 30), 
                     cv::FONT_HERSHEY_SIMPLEX, 1.2, cv::Scalar(0, 0, 255), 2);
             
-            std::string fileName = generateFileName(outputDir + "/result", sn);
+            std::string fileName = generateFileName(outputDir, "result", sn);
             if (cv::imwrite(fileName, resultImage))
             {
                 logger->info("Result image saved: {}", fileName);
@@ -261,7 +261,7 @@ namespace LidarLineDetector {
             cv::circle(debugPoints, pt, 1, cv::Scalar(0, 0, 255), -1);
         }
         if (!outputDir.empty()) {
-            std::string debugFileName = generateFileName(outputDir + "/ROI_laser_points", sn);
+            std::string debugFileName = generateFileName(outputDir, "ROI_laser", sn);
             cv::imwrite(debugFileName, debugPoints);
         }
 
@@ -358,14 +358,14 @@ namespace LidarLineDetector {
             // 判断left.y在X1~X4，right.y在X2~X3
             bool left_in = (pt1_roi.y >= x1_y - 5) && (pt1_roi.y <= x4_y + 5);
             bool right_in = (pt2_roi.y >= x2_y -5) && (pt2_roi.y <= x3_y + 5);
-            if (!(left_in && right_in)) {
-                logger->error("The laser line endpoint exceeds the ROI boundary: left_y={}, right_y={}", pt1_roi.y, pt2_roi.y);
-                result.status = DetectionResultCode::OUT_OF_ROI;
-                return result;
-            }
+            // if (!(left_in && right_in)) {
+            //     logger->error("The laser line endpoint exceeds the ROI boundary: left_y={}, right_y={}", pt1_roi.y, pt2_roi.y);
+            //     result.status = DetectionResultCode::OUT_OF_ROI;
+            //     return result;
+            // }
             cv::line(resultImage, pt1_roi, pt2_roi, cv::Scalar(0, 0, 255), 2, cv::LINE_AA);
 
-            std::string fileName = generateFileName(outputDir + "/result", sn);
+            std::string fileName = generateFileName(outputDir, "result", sn);
             if (cv::imwrite(fileName, resultImage))
             {
                 logger->info("Image saved successfully: {}", fileName);

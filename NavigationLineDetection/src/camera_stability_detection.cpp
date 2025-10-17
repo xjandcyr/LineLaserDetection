@@ -251,7 +251,7 @@ namespace CameraStabilityDetection {
                 }
             }
             
-            std::string fileName = outputDir + "/camera_check_" + timeStr + ".jpg";
+            std::string fileName = outputDir + "/" + timeStr + "_" + "camera_check" + ".jpg";
             if (cv::imwrite(fileName, displayImage)) {
                 logger->info("Camera self-test image saved: {}", fileName);
                 // 将保存的文件路径添加到结果消息中

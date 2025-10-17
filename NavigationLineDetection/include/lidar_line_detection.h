@@ -166,7 +166,7 @@ namespace LidarLineDetector {
 // ------------------------------------------------------------------------
     // 工具函数
     // ------------------------------------------------------------------------
-    std::string generateFileName(const std::string& basePath, const std::string& sn);
+    std::string generateFileName(const std::string& outputDir, const std::string& state, const std::string& sn);
 
     void saveResultImage(const cv::Mat& sourceImage, const std::string& message, const std::string& sn,
                         const QuadROI& quadRoi, const std::string& outputDir, LidarDetectionResult &result);
