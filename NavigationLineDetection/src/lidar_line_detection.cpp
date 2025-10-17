@@ -143,7 +143,7 @@ namespace LidarLineDetector {
         for (int i = 0; timeStr[i]; i++)
             if (timeStr[i] == ' ' || timeStr[i] == ':' || timeStr[i] == '\n')
                 timeStr[i] = '_';
-        return outputDir + "/" + sn + "_" + state + "_" + timeStr + ".jpg";
+        return outputDir + "/" + timeStr + "_" + sn + "_" + state + ".jpg";
     }
 
     // 保存失败图像的函数
@@ -232,7 +232,7 @@ namespace LidarLineDetector {
         if(moduleBrand == "Piceacorp")      // 杉川自研模组
         {
             brightnessThreshold = 180.0f;
-            rmsThreshold = 10.0f;
+            rmsThreshold = 12.0f;
         }
         else if(moduleBrand == "Camsense")  // 欢创模组
         {
@@ -261,7 +261,7 @@ namespace LidarLineDetector {
             cv::circle(debugPoints, pt, 1, cv::Scalar(0, 0, 255), -1);
         }
         if (!outputDir.empty()) {
-            std::string debugFileName = generateFileName(outputDir, "ROI_laser", sn);
+            std::string debugFileName = generateFileName(outputDir, "ROI_laserPoints", sn);
             cv::imwrite(debugFileName, debugPoints);
         }
 
