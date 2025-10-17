@@ -184,7 +184,7 @@ int main() {
                 // 保存标定数据
                 CameraCalibration calibration;
                 calibration.target_center = center;
-                if (calibration.savePointToFile("../../config/SelfCheckCenterPoint.yml")) {
+                if (calibration.savePointToFile("../config/SelfCheckCenterPoint.yml")) {
                     cout << "相机标定成功，数据已保存到 config/SelfCheckCenterPoint.yml" << endl;
                     
                     // 在图像上绘制角点和中心点

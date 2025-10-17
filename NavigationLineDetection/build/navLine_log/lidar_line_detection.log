@@ -47,3 +47,138 @@
 [2025-10-16 15:04:02.498] [lidar_logger] [info] ROI configuration path: ../config/CameraSelfCheckRoi.yml
 [2025-10-16 15:04:02.498] [lidar_logger] [info] Successfully loaded ROI config
 [2025-10-16 15:04:02.498] [lidar_logger] [info] Quad ROI config read successfully: P1(438,351), P2(1618,334), P3(1635,805), P4(426,805)
+[2025-10-17 10:54:18.632] [lidar_logger] [info] 
+===============================================================================
+[2025-10-17 10:54:18.632] [lidar_logger] [info] Start lidar line detection, sn: 123456, executionTimes: 5
+[2025-10-17 10:54:18.632] [lidar_logger] [info] ROI configuration path: ../config/NavLineCheckRoi.yml
+[2025-10-17 10:54:18.632] [lidar_logger] [info] Successfully loaded ROI config
+[2025-10-17 10:54:18.632] [lidar_logger] [info] Quad ROI config read successfully: P1(659,463), P2(1337,502), P3(1335,552), P4(652,525)
+[2025-10-17 10:54:18.632] [lidar_logger] [info] Use quadrilateral ROI for detection
+[2025-10-17 10:54:18.632] [lidar_logger] [info] Start laser line detection within the ROI, moduleBrand: Piceacorp
+[2025-10-17 10:54:18.663] [lidar_logger] [info] Navigation laser line RMS: 3.6763352962114793
+[2025-10-17 10:54:18.663] [lidar_logger] [info] Navigation laser line length: 677.7351531982422, ROI Width: 683.5334666276407
+[2025-10-17 10:54:18.693] [lidar_logger] [info] Image saved successfully: ../output/result_123456_Fri_Oct_17_10_54_18_2025_.jpg
+[2025-10-17 10:54:18.693] [lidar_logger] [info] Quad ROI laser line detection successful, angle: 3.54°, number of points: 3790, RMS: 3.68, length: 677.74
+[2025-10-17 10:54:18.712] [lidar_logger] [info] ROI configuration path: ../config/CameraSelfCheckRoi.yml
+[2025-10-17 10:54:18.712] [lidar_logger] [info] Successfully loaded ROI config
+[2025-10-17 10:54:18.712] [lidar_logger] [info] Quad ROI config read successfully: P1(438,351), P2(1618,334), P3(1635,805), P4(426,805)
+[2025-10-17 10:56:44.960] [lidar_logger] [info] 
+===============================================================================
+[2025-10-17 10:56:44.960] [lidar_logger] [info] Start lidar line detection, sn: 123456, executionTimes: 5
+[2025-10-17 10:56:44.960] [lidar_logger] [info] ROI configuration path: ../config/NavLineCheckRoi.yml
+[2025-10-17 10:56:44.960] [lidar_logger] [info] Successfully loaded ROI config
+[2025-10-17 10:56:44.960] [lidar_logger] [info] Quad ROI config read successfully: P1(649,462), P2(1437,511), P3(1444,420), P4(640,368)
+[2025-10-17 10:56:44.960] [lidar_logger] [info] Use quadrilateral ROI for detection
+[2025-10-17 10:56:44.960] [lidar_logger] [info] Start laser line detection within the ROI, moduleBrand: Piceacorp
+[2025-10-17 10:56:44.987] [lidar_logger] [info] Navigation laser line RMS: 7.158390811209698
+[2025-10-17 10:56:44.987] [lidar_logger] [info] Navigation laser line length: 772.0839691162109, ROI Width: 805.6798371561746
+[2025-10-17 10:56:44.988] [lidar_logger] [error] The laser line endpoint exceeds the ROI boundary: left_y=464, right_y=503
+[2025-10-17 10:56:44.988] [lidar_logger] [error] Quad ROI laser line detection failed, Error Code: 2
+[2025-10-17 10:56:45.006] [lidar_logger] [info] ROI configuration path: ../config/CameraSelfCheckRoi.yml
+[2025-10-17 10:56:45.006] [lidar_logger] [info] Successfully loaded ROI config
+[2025-10-17 10:56:45.006] [lidar_logger] [info] Quad ROI config read successfully: P1(438,351), P2(1618,334), P3(1635,805), P4(426,805)
+[2025-10-17 11:04:18.175] [lidar_logger] [info] 
+===============================================================================
+[2025-10-17 11:04:18.175] [lidar_logger] [info] Start lidar line detection, sn: 123456, executionTimes: 5
+[2025-10-17 11:04:18.175] [lidar_logger] [info] ROI configuration path: ../config/NavLineCheckRoi.yml
+[2025-10-17 11:04:18.175] [lidar_logger] [info] Successfully loaded ROI config
+[2025-10-17 11:04:18.175] [lidar_logger] [info] Quad ROI config read successfully: P1(647,385), P2(642,474), P3(1370,513), P4(1380,429)
+[2025-10-17 11:04:18.175] [lidar_logger] [info] Use quadrilateral ROI for detection
+[2025-10-17 11:04:18.175] [lidar_logger] [info] Start laser line detection within the ROI, moduleBrand: Piceacorp
+[2025-10-17 11:04:18.196] [lidar_logger] [info] Navigation laser line RMS: 5.730685595048102
+[2025-10-17 11:04:18.196] [lidar_logger] [info] Navigation laser line length: 724.8899841308594, ROI Width: 734.3194127898295
+[2025-10-17 11:04:18.197] [lidar_logger] [error] The laser line endpoint exceeds the ROI boundary: left_y=465, right_y=504
+[2025-10-17 11:04:18.198] [lidar_logger] [error] Quad ROI laser line detection failed, Error Code: 2
+[2025-10-17 11:04:18.215] [lidar_logger] [info] ROI configuration path: ../config/CameraSelfCheckRoi.yml
+[2025-10-17 11:04:18.215] [lidar_logger] [info] Successfully loaded ROI config
+[2025-10-17 11:04:18.215] [lidar_logger] [info] Quad ROI config read successfully: P1(438,351), P2(1618,334), P3(1635,805), P4(426,805)
+[2025-10-17 11:04:49.323] [lidar_logger] [info] 
+===============================================================================
+[2025-10-17 11:04:49.323] [lidar_logger] [info] Start lidar line detection, sn: 123456, executionTimes: 5
+[2025-10-17 11:04:49.323] [lidar_logger] [info] ROI configuration path: ../config/NavLineCheckRoi.yml
+[2025-10-17 11:04:49.323] [lidar_logger] [info] Successfully loaded ROI config
+[2025-10-17 11:04:49.323] [lidar_logger] [info] Quad ROI config read successfully: P1(647,385), P2(642,474), P3(1370,513), P4(1380,429)
+[2025-10-17 11:04:49.323] [lidar_logger] [info] Use quadrilateral ROI for detection
+[2025-10-17 11:04:49.323] [lidar_logger] [info] Start laser line detection within the ROI, moduleBrand: Piceacorp
+[2025-10-17 11:04:49.335] [lidar_logger] [info] Navigation laser line RMS: 5.730685595048102
+[2025-10-17 11:04:49.335] [lidar_logger] [info] Navigation laser line length: 724.8899841308594, ROI Width: 734.3194127898295
+[2025-10-17 11:04:49.336] [lidar_logger] [error] The laser line endpoint exceeds the ROI boundary: left_y=465, right_y=504
+[2025-10-17 11:04:49.337] [lidar_logger] [error] Quad ROI laser line detection failed, Error Code: 2
+[2025-10-17 11:04:49.354] [lidar_logger] [info] ROI configuration path: ../config/CameraSelfCheckRoi.yml
+[2025-10-17 11:04:49.354] [lidar_logger] [info] Successfully loaded ROI config
+[2025-10-17 11:04:49.354] [lidar_logger] [info] Quad ROI config read successfully: P1(438,351), P2(1618,334), P3(1635,805), P4(426,805)
+[2025-10-17 11:08:08.768] [lidar_logger] [info] 
+===============================================================================
+[2025-10-17 11:08:08.768] [lidar_logger] [info] Start lidar line detection, sn: 123456, executionTimes: 5
+[2025-10-17 11:08:08.768] [lidar_logger] [info] ROI configuration path: ../config/NavLineCheckRoi.yml
+[2025-10-17 11:08:08.768] [lidar_logger] [info] Successfully loaded ROI config
+[2025-10-17 11:08:08.768] [lidar_logger] [info] Quad ROI config read successfully: P1(647,385), P2(642,474), P3(1370,513), P4(1380,429)
+[2025-10-17 11:08:08.768] [lidar_logger] [info] Use quadrilateral ROI for detection
+[2025-10-17 11:08:08.768] [lidar_logger] [info] Start laser line detection within the ROI, moduleBrand: Piceacorp
+[2025-10-17 11:08:08.794] [lidar_logger] [info] Navigation laser line RMS: 5.730685595048102
+[2025-10-17 11:08:08.794] [lidar_logger] [info] Navigation laser line length: 724.8899841308594, ROI Width: 734.3194127898295
+[2025-10-17 11:08:08.795] [lidar_logger] [error] Image saved failed: 123456_Fri_Oct_17_11_08_08_2025__../output/result.jpg
+[2025-10-17 11:08:08.795] [lidar_logger] [info] Quad ROI laser line detection successful, angle: 3.05°, number of points: 5867, RMS: 5.73, length: 724.89
+[2025-10-17 11:08:08.814] [lidar_logger] [info] ROI configuration path: ../config/CameraSelfCheckRoi.yml
+[2025-10-17 11:08:08.814] [lidar_logger] [info] Successfully loaded ROI config 
+[2025-10-17 11:08:08.814] [lidar_logger] [info] Quad ROI config read successfully: P1(438,351), P2(1618,334), P3(1635,805), P4(426,805)
+Image saved successfully: ../output/result_123456_Fri_Oct_17_10_54_18_2025_.jpg[2025-10-17 11:20:17.278] [lidar_logger] [info] 
+===============================================================================
+[2025-10-17 11:20:17.278] [lidar_logger] [info] Start lidar line detection, sn: 123456, executionTimes: 5
+[2025-10-17 11:20:17.278] [lidar_logger] [info] ROI configuration path: ../config/NavLineCheckRoi.yml
+[2025-10-17 11:20:17.278] [lidar_logger] [info] Successfully loaded ROI config
+[2025-10-17 11:20:17.278] [lidar_logger] [info] Quad ROI config read successfully: P1(647,385), P2(642,474), P3(1370,513), P4(1380,429)
+[2025-10-17 11:20:17.278] [lidar_logger] [info] Use quadrilateral ROI for detection
+[2025-10-17 11:20:17.278] [lidar_logger] [info] Start laser line detection within the ROI, moduleBrand: Piceacorp
+[2025-10-17 11:20:17.304] [lidar_logger] [info] Navigation laser line RMS: 5.730685595048102
+[2025-10-17 11:20:17.304] [lidar_logger] [info] Navigation laser line length: 724.8899841308594, ROI Width: 734.3194127898295
+[2025-10-17 11:20:17.331] [lidar_logger] [info] Image saved successfully: ../output/123456_result_Fri_Oct_17_11_20_17_2025_.jpg
+[2025-10-17 11:20:17.331] [lidar_logger] [info] Quad ROI laser line detection successful, angle: 3.05°, number of points: 5867, RMS: 5.73, length: 724.89
+[2025-10-17 11:20:17.349] [lidar_logger] [info] ROI configuration path: ../config/CameraSelfCheckRoi.yml
+[2025-10-17 11:20:17.349] [lidar_logger] [info] Successfully loaded ROI config
+[2025-10-17 11:20:17.349] [lidar_logger] [info] Quad ROI config read successfully: P1(438,351), P2(1618,334), P3(1635,805), P4(426,805)
+[2025-10-17 11:28:44.153] [lidar_logger] [info] 
+===============================================================================
+[2025-10-17 11:28:44.153] [lidar_logger] [info] Start lidar line detection, sn: 123456, executionTimes: 5
+[2025-10-17 11:28:44.153] [lidar_logger] [info] ROI configuration path: ../config/NavLineCheckRoi.yml
+[2025-10-17 11:28:44.153] [lidar_logger] [info] Successfully loaded ROI config
+[2025-10-17 11:28:44.153] [lidar_logger] [info] Quad ROI config read successfully: P1(647,385), P2(642,474), P3(1370,513), P4(1380,429)
+[2025-10-17 11:28:44.153] [lidar_logger] [info] Use quadrilateral ROI for detection
+[2025-10-17 11:28:44.153] [lidar_logger] [info] Start laser line detection within the ROI, moduleBrand: Piceacorp
+[2025-10-17 11:28:44.191] [lidar_logger] [info] Navigation laser line RMS: 5.730685595048102
+[2025-10-17 11:28:44.191] [lidar_logger] [info] Navigation laser line length: 724.8899841308594, ROI Width: 734.3194127898295
+[2025-10-17 11:28:44.217] [lidar_logger] [info] Image saved successfully: ../output/123456_result_Fri_Oct_17_11_28_44_2025_.jpg
+[2025-10-17 11:28:44.217] [lidar_logger] [info] Quad ROI laser line detection successful, angle: 3.05°, number of points: 5867, RMS: 5.73, length: 724.89
+[2025-10-17 11:28:44.236] [lidar_logger] [info] ROI configuration path: ../config/CameraSelfCheckRoi.yml
+[2025-10-17 11:28:44.236] [lidar_logger] [info] Successfully loaded ROI config
+[2025-10-17 11:28:44.236] [lidar_logger] [info] Quad ROI config read successfully: P1(438,351), P2(1618,334), P3(1635,805), P4(426,805)
+[2025-10-17 11:28:52.233] [lidar_logger] [info] 
+===============================================================================
+[2025-10-17 11:28:52.233] [lidar_logger] [info] Start lidar line detection, sn: 123456, executionTimes: 5
+[2025-10-17 11:28:52.233] [lidar_logger] [info] ROI configuration path: ../config/NavLineCheckRoi.yml
+[2025-10-17 11:28:52.234] [lidar_logger] [info] Successfully loaded ROI config
+[2025-10-17 11:28:52.234] [lidar_logger] [info] Quad ROI config read successfully: P1(647,385), P2(642,474), P3(1370,513), P4(1380,429)
+[2025-10-17 11:28:52.234] [lidar_logger] [info] Use quadrilateral ROI for detection
+[2025-10-17 11:28:52.234] [lidar_logger] [info] Start laser line detection within the ROI, moduleBrand: Piceacorp
+[2025-10-17 11:28:52.260] [lidar_logger] [info] Navigation laser line RMS: 5.730685595048102
+[2025-10-17 11:28:52.260] [lidar_logger] [info] Navigation laser line length: 724.8899841308594, ROI Width: 734.3194127898295
+[2025-10-17 11:28:52.287] [lidar_logger] [info] Image saved successfully: ../output/123456_result_Fri_Oct_17_11_28_52_2025_.jpg
+[2025-10-17 11:28:52.287] [lidar_logger] [info] Quad ROI laser line detection successful, angle: 3.05°, number of points: 5867, RMS: 5.73, length: 724.89
+[2025-10-17 11:28:52.306] [lidar_logger] [info] ROI configuration path: ../config/CameraSelfCheckRoi.yml
+[2025-10-17 11:28:52.306] [lidar_logger] [info] Successfully loaded ROI config
+[2025-10-17 11:28:52.306] [lidar_logger] [info] Quad ROI config read successfully: P1(438,351), P2(1618,334), P3(1635,805), P4(426,805)
+[2025-10-17 15:52:52.359] [lidar_logger] [info] 
+===============================================================================
+[2025-10-17 15:52:52.359] [lidar_logger] [info] Start lidar line detection, sn: 123456, executionTimes: 5
+[2025-10-17 15:52:52.359] [lidar_logger] [info] ROI configuration path: ../config/NavLineCheckRoi.yml
+[2025-10-17 15:52:52.359] [lidar_logger] [info] Successfully loaded ROI config
+[2025-10-17 15:52:52.359] [lidar_logger] [info] Quad ROI config read successfully: P1(411,552), P2(1681,584), P3(1688,635), P4(406,619)
+[2025-10-17 15:52:52.359] [lidar_logger] [info] Use quadrilateral ROI for detection
+[2025-10-17 15:52:52.359] [lidar_logger] [info] Start laser line detection within the ROI, moduleBrand: Piceacorp
+[2025-10-17 15:52:52.401] [lidar_logger] [info] Navigation laser line RMS: 9.856985423463575
+[2025-10-17 15:52:52.402] [lidar_logger] [info] Navigation laser line length: 1264.2127380371094, ROI Width: 1282.099840106066
+[2025-10-17 15:52:52.427] [lidar_logger] [info] Image saved successfully: ../output/123456_result_Fri_Oct_17_15_52_52_2025_.jpg
+[2025-10-17 15:52:52.427] [lidar_logger] [info] Quad ROI laser line detection successful, angle: 0.53°, number of points: 17288, RMS: 9.86, length: 1264.21
+[2025-10-17 15:52:52.442] [lidar_logger] [info] ROI configuration path: ../config/CameraSelfCheckRoi.yml
+[2025-10-17 15:52:52.442] [lidar_logger] [info] Successfully loaded ROI config
+[2025-10-17 15:52:52.442] [lidar_logger] [info] Quad ROI config read successfully: P1(433,342), P2(1643,323), P3(1674,816), P4(420,815)
