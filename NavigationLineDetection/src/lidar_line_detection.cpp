@@ -219,40 +219,20 @@ namespace LidarLineDetector {
         // 提取ROI区域
         cv::Mat roiMat;
         image.copyTo(roiMat, mask);
-        if (roiMat.empty())
-        {
-            logger->error("Failed to extract the quadrilateral ROI area, ROI is empty");
-            result.status = DetectionResultCode::ROI_INVALID;
-            return result;
-        }
-
-        // 定义亮度阈值和RMS阈值
-        float brightnessThreshold;
-        float rmsThreshold;
+        
+        // 定义RMS阈值
+        float rmsThreshold = 5.0f;
+        std::vector<cv::Point> laserPoints;
         if(moduleBrand == "Piceacorp")      // 杉川自研模组
         {
-            brightnessThreshold = 180.0f;
-            rmsThreshold = 12.0f;
+            findLaserPointsUsePiceacorpModule(roiMat, laserPoints);
+            rmsThreshold = 10.0f;
         }
         else if(moduleBrand == "Camsense")  // 欢创模组
         {
-            brightnessThreshold = 220.0f;
+            findLaserPointsUseCamsenseModule(roiMat, laserPoints);
             // 根据PV31量产的1400次标定数据，RMS误差绝大部分在2左右，最大为3.75，因此欢创模组设置RMS阈值为5.0
             rmsThreshold = 5.0f;
-        }
-
-        // 灰度化
-        cv::Mat gray;
-        cv::cvtColor(roiMat, gray, cv::COLOR_BGR2GRAY);
-
-        // 提取所有高亮点
-        std::vector<cv::Point> laserPoints;
-        for (int y = 0; y < gray.rows; ++y) {
-            for (int x = 0; x < gray.cols; ++x) {
-                if (gray.at<uchar>(y, x) > brightnessThreshold) {
-                    laserPoints.emplace_back(x, y);
-                }
-            }
         }
 
         // 可视化激光点
@@ -287,7 +267,6 @@ namespace LidarLineDetector {
         }
         double rms = std::sqrt(sumDist2 / laserPoints.size());
         logger->info("Navigation laser line RMS: {}", rms);
-
         if (rms > rmsThreshold) {
             logger->error("RMS is too high, RMS: {}, rmsThreshold: {}", rms, rmsThreshold);
             string failMsg = "RMS is too high, RMS: " + std::to_string(rms);
@@ -380,6 +359,53 @@ namespace LidarLineDetector {
         logger->info("Quad ROI laser line detection successful, angle: {:.2f}°, number of points: {}, RMS: {:.2f}, length: {:.2f}", 
                     lineAngle * 180.0 / CV_PI, laserPoints.size(), rms, length);
         return result;
+    }
+
+    void findLaserPointsUsePiceacorpModule(const cv::Mat& roiMat, std::vector<cv::Point>& laserPoints)
+    {
+        // 步骤1：转换为灰度图并增强对比度
+        cv::Mat gray, binary;
+        cv::cvtColor(roiMat, gray, cv::COLOR_BGR2GRAY);
+        cv::Mat enhanced;
+        cv::equalizeHist(gray, enhanced);  // 直方图均衡化增强对比度
+
+        // 步骤2：使用颜色空间处理（针对淡紫色）
+        cv::Mat hsv, color_binary;
+        cv::cvtColor(roiMat, hsv, cv::COLOR_BGR2HSV);
+
+        // 紫色在HSV色环中大约在120-180度之间；饱和度范围[40, 180]​；明度范围[40, 255]​
+        cv::Scalar lower_purple(120, 40, 40);    // 淡紫色下限
+        cv::Scalar upper_purple(180, 180, 255);  // 淡紫色上限
+        cv::inRange(hsv, lower_purple, upper_purple, color_binary);
+
+        // 步骤3：结合两种方法的二值化结果
+        cv::Mat final_binary;
+        cv::bitwise_and(enhanced, color_binary, final_binary);
+
+        // 提取所有高亮点
+        for (int y = 0; y < final_binary.rows; ++y) {
+            for (int x = 0; x < final_binary.cols; ++x) {
+                if (final_binary.at<uchar>(y, x) > 100) {
+                    laserPoints.emplace_back(x, y);
+                }
+            }
+        }
+    }
+
+    void findLaserPointsUseCamsenseModule(const cv::Mat& roiMat, std::vector<cv::Point>& laserPoints)
+    {
+        // 灰度化
+        cv::Mat gray;
+        cv::cvtColor(roiMat, gray, cv::COLOR_BGR2GRAY);
+
+        // 提取所有高亮点
+        for (int y = 0; y < gray.rows; ++y) {
+            for (int x = 0; x < gray.cols; ++x) {
+                if (gray.at<uchar>(y, x) > 220) {
+                    laserPoints.emplace_back(x, y);
+                }
+            }
+        }
     }
 
     // 激光线检测主函数

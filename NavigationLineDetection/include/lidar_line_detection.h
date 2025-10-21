@@ -176,6 +176,9 @@ namespace LidarLineDetector {
     // ------------------------------------------------------------------------
     LidarDetectionResult detectLidarLineWithQuadROI(const cv::Mat& image, const QuadROI& quadRoi, const std::string& moduleBrand,
                                                    const std::string& sn, const std::string& outputDir);
+    void findLaserPointsUsePiceacorpModule(const cv::Mat& roiMat, std::vector<cv::Point>& laserPoints);
+    void findLaserPointsUseCamsenseModule(const cv::Mat& roiMat, std::vector<cv::Point>& laserPoints);
+    
     LidarLineResult lineDetect(const cv::Mat& image, const std::string& configPath, 
                           const std::string& sn, const std::string& outputDir, int executionTimes);
 
