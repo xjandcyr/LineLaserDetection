@@ -294,10 +294,11 @@ namespace LidarLineDetector {
         }
         logger->info("Navigation laser line length: {}, ROI Width: {}", length, roiWidth);
 
-        // 阈值可根据实际调整
-        if (length < roiWidth * 0.9)
+        // 激光线的长度阈值，默认0.9
+        float lengthThreshold = 0.9;
+        if (length < roiWidth * lengthThreshold)
         {
-            logger->error("Navigation laser line length: {}, ROI Width: {}", length, roiWidth);
+            logger->error("Navigation laser line length: {}, ROI Width: {}, lengthThreshold: {}", length, roiWidth, lengthThreshold);
             string failMsg = "The length is too short, length: " + std::to_string(length);
             saveResultImage(image, failMsg, sn, quadRoi, outputDir, result);
             result.status = DetectionResultCode::NOT_FOUND;
