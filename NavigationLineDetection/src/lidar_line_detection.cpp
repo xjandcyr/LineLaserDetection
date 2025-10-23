@@ -138,11 +138,11 @@ namespace LidarLineDetector {
     string generateFileName(const string &outputDir, const string &state, const string &sn)
     {
         time_t now = time(0);
-        char timeStr[26];
-        ctime_s(timeStr, sizeof(timeStr), &now);
-        for (int i = 0; timeStr[i]; i++)
-            if (timeStr[i] == ' ' || timeStr[i] == ':' || timeStr[i] == '\n')
-                timeStr[i] = '_';
+        struct tm timeinfo;
+        localtime_s(&timeinfo, &now); // 将时间戳转换为本地时间的tm结构体
+
+        char timeStr[20];
+        strftime(timeStr, sizeof(timeStr), "%Y-%m-%d-%H-%M-%S", &timeinfo); // 格式化时间字符串
         return outputDir + "/" + timeStr + "_" + sn + "_" + state + ".jpg";
     }
 
