@@ -2,8 +2,8 @@
 ---
 CameraSelfCheckRoi:
    quadRoi:
-      - { x:426, y:342 }
-      - { x:1623, y:328 }
-      - { x:1654, y:807 }
-      - { x:408, y:807 }
+      - { x:417, y:338 }
+      - { x:1620, y:323 }
+      - { x:1650, y:805 }
+      - { x:398, y:801 }
    duaLineModuleBrand: Piceacorp
