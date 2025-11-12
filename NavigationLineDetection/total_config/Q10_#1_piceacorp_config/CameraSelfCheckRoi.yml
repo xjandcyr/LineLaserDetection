@@ -1,0 +1,9 @@
+%YAML:1.0
+---
+CameraSelfCheckRoi:
+   quadRoi:
+      - { x:417, y:338 }
+      - { x:1620, y:323 }
+      - { x:1650, y:805 }
+      - { x:398, y:801 }
+   duaLineModuleBrand: Piceacorp
