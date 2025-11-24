@@ -96,9 +96,9 @@ int main() {
                 imshow("QuadROI Result", resultImage);
                 
                 // 修改调用处的路径格式
-                if (saveQuadROIToFile(quadRoi, "CameraSelfCheckRoi", "../config/CameraSelfCheckRoi.yml"))
+                if (saveQuadROIToFile(quadRoi, "CameraSelfCheckRoi", "E:/Code/DuaLineLaserDetection/NavigationLineDetection/config/CameraSelfCheckRoi.yml"))
                 {
-                    cout << "相机自检ROI已保存到 config/CameraSelfCheckRoi.yml" << endl;
+                    cout << "相机自检ROI已保存到 E:/Code/DuaLineLaserDetection/NavigationLineDetection/config/CameraSelfCheckRoi.yml" << endl;
                 } else {
                     cout << "保存相机自检ROI失败！" << endl;
                 }
@@ -146,8 +146,8 @@ int main() {
                 drawQuadROI(resultImage, quadRoi, Scalar(0, 255, 0), 2);
                 imshow("QuadROI Result", resultImage);
                 
-                if (saveQuadROIToFile(quadRoi, "NavLineCheckRoi", "../config/NavLineCheckRoi.yml")) {
-                    cout << "导航线检测ROI已保存到 config/NavLineCheckRoi.yml" << endl;
+                if (saveQuadROIToFile(quadRoi, "NavLineCheckRoi", "E:/Code/DuaLineLaserDetection/NavigationLineDetection/config/NavLineCheckRoi.yml")) {
+                    cout << "导航线检测ROI已保存到 E:/Code/DuaLineLaserDetection/NavigationLineDetection/config/NavLineCheckRoi.yml" << endl;
                 } else {
                     cout << "保存导航线检测ROI失败！" << endl;
                 }
@@ -184,8 +184,8 @@ int main() {
                 // 保存标定数据
                 CameraCalibration calibration;
                 calibration.target_center = center;
-                if (calibration.savePointToFile("../config/SelfCheckCenterPoint.yml")) {
-                    cout << "相机标定成功，数据已保存到 config/SelfCheckCenterPoint.yml" << endl;
+                if (calibration.savePointToFile("E:/Code/DuaLineLaserDetection/NavigationLineDetection/config/SelfCheckCenterPoint.yml")) {
+                    cout << "相机标定成功，数据已保存到 E:/Code/DuaLineLaserDetection/NavigationLineDetection/config/SelfCheckCenterPoint.yml" << endl;
                     
                     // 在图像上绘制角点和中心点
                     Mat resultImage = image.clone();
