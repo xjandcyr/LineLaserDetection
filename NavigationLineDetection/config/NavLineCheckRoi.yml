@@ -2,8 +2,8 @@
 ---
 NavLineCheckRoi:
    quadRoi:
-      - { x:407, y:562 }
-      - { x:1673, y:593 }
-      - { x:1675, y:641 }
-      - { x:400, y:631 }
+      - { x:412, y:529 }
+      - { x:1673, y:561 }
+      - { x:1676, y:608 }
+      - { x:411, y:595 }
    duaLineModuleBrand: Piceacorp

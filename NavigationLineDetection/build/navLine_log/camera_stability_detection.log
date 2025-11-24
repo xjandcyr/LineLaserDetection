@@ -99,3 +99,80 @@
 [2025-10-17 15:52:52.448] [camera_logger] [info] target surface center detect end, center coordinates: (1038.06, 572.65)
 [2025-10-17 15:52:52.448] [camera_logger] [info] Camera self-test completed: stable (distance: 0.0px), tolerance: 5.0px
 [2025-10-17 15:52:52.472] [camera_logger] [info] Camera self-test image saved: ../output/Fri_Oct_17_15_52_52_2025__camera_check.jpg
+[2025-10-23 15:56:06.907] [camera_logger] [info] 
+===============================================================================
+[2025-10-23 15:56:06.907] [camera_logger] [info] Tolerance not found in config, using default value: 5
+[2025-10-23 15:56:06.907] [camera_logger] [info] Successfully loaded target config: center=(1030.89, 571.74), tolerance=5
+[2025-10-23 15:56:06.907] [camera_logger] [info] camera movement detect start
+[2025-10-23 15:56:06.907] [camera_logger] [info] target surface center detect start
+[2025-10-23 15:56:06.910] [camera_logger] [info] black squares detect start
+[2025-10-23 15:56:06.911] [camera_logger] [info] black squares detect end, found 4 black squares
+[2025-10-23 15:56:06.912] [camera_logger] [info] target surface center detect end, center coordinates: (1030.95, 571.63)
+[2025-10-23 15:56:06.912] [camera_logger] [info] Camera self-test completed: stable (distance: 0.1px), tolerance: 5.0px
+[2025-10-23 15:56:06.941] [camera_logger] [info] Camera self-test image saved: ../output/Thu_Oct_23_15_56_06_2025__camera_check.jpg
+[2025-10-23 16:51:53.003] [camera_logger] [info] 
+===============================================================================
+[2025-10-23 16:51:53.004] [camera_logger] [info] Tolerance not found in config, using default value: 5
+[2025-10-23 16:51:53.004] [camera_logger] [info] Successfully loaded target config: center=(1030.89, 571.74), tolerance=5
+[2025-10-23 16:51:53.004] [camera_logger] [info] camera movement detect start
+[2025-10-23 16:51:53.004] [camera_logger] [info] target surface center detect start
+[2025-10-23 16:51:53.006] [camera_logger] [info] black squares detect start
+[2025-10-23 16:51:53.008] [camera_logger] [info] black squares detect end, found 4 black squares
+[2025-10-23 16:51:53.008] [camera_logger] [info] target surface center detect end, center coordinates: (1030.95, 571.63)
+[2025-10-23 16:51:53.009] [camera_logger] [info] Camera self-test completed: stable (distance: 0.1px), tolerance: 5.0px
+[2025-10-23 16:51:53.036] [camera_logger] [info] Camera self-test image saved: ../output/2025-10-23-16-51-53_camera_check.jpg
+[2025-10-23 16:53:58.181] [camera_logger] [info] 
+===============================================================================
+[2025-10-23 16:53:58.181] [camera_logger] [info] Tolerance not found in config, using default value: 5
+[2025-10-23 16:53:58.181] [camera_logger] [info] Successfully loaded target config: center=(1030.89, 571.74), tolerance=5
+[2025-10-23 16:53:58.181] [camera_logger] [info] camera movement detect start
+[2025-10-23 16:53:58.181] [camera_logger] [info] target surface center detect start
+[2025-10-23 16:53:58.185] [camera_logger] [info] black squares detect start
+[2025-10-23 16:53:58.187] [camera_logger] [info] black squares detect end, found 4 black squares
+[2025-10-23 16:53:58.188] [camera_logger] [info] target surface center detect end, center coordinates: (1030.95, 571.63)
+[2025-10-23 16:53:58.188] [camera_logger] [info] Camera self-test completed: stable (distance: 0.1px), tolerance: 5.0px
+[2025-10-23 16:53:58.215] [camera_logger] [info] Camera self-test image saved: ../output/2025-10-23-16-53-58_camera_check.jpg
+[2025-11-24 10:07:00.986] [camera_logger] [info] 
+===============================================================================
+[2025-11-24 10:07:00.986] [camera_logger] [info] Tolerance not found in config, using default value: 5
+[2025-11-24 10:07:00.986] [camera_logger] [info] Successfully loaded target config: center=(1037.89, 553.62), tolerance=5
+[2025-11-24 10:07:00.986] [camera_logger] [info] camera movement detect start
+[2025-11-24 10:07:00.986] [camera_logger] [info] target surface center detect start
+[2025-11-24 10:07:00.989] [camera_logger] [info] black squares detect start
+[2025-11-24 10:07:00.992] [camera_logger] [info] black squares detect end, found 4 black squares
+[2025-11-24 10:07:00.992] [camera_logger] [info] target surface center detect end, center coordinates: (1014.83, 567.08)
+[2025-11-24 10:07:00.992] [camera_logger] [info] Camera self-test completed: moved (distance: 26.7px), tolerance: 5.0px
+[2025-11-24 10:07:01.017] [camera_logger] [info] Camera self-test image saved: ../output/2025-11-24-10-07-00_camera_check.jpg
+[2025-11-24 10:08:11.702] [camera_logger] [info] 
+===============================================================================
+[2025-11-24 10:08:11.702] [camera_logger] [info] Tolerance not found in config, using default value: 5
+[2025-11-24 10:08:11.702] [camera_logger] [info] Successfully loaded target config: center=(1037.89, 553.62), tolerance=5
+[2025-11-24 10:08:11.702] [camera_logger] [info] camera movement detect start
+[2025-11-24 10:08:11.702] [camera_logger] [info] target surface center detect start
+[2025-11-24 10:08:11.705] [camera_logger] [info] black squares detect start
+[2025-11-24 10:08:11.707] [camera_logger] [info] black squares detect end, found 4 black squares
+[2025-11-24 10:08:11.707] [camera_logger] [info] target surface center detect end, center coordinates: (1037.91, 553.61)
+[2025-11-24 10:08:11.708] [camera_logger] [info] Camera self-test completed: stable (distance: 0.0px), tolerance: 5.0px
+[2025-11-24 10:08:11.732] [camera_logger] [info] Camera self-test image saved: ../output/2025-11-24-10-08-11_camera_check.jpg
+[2025-11-24 10:13:36.086] [camera_logger] [info] 
+===============================================================================
+[2025-11-24 10:13:36.086] [camera_logger] [info] Tolerance not found in config, using default value: 5
+[2025-11-24 10:13:36.086] [camera_logger] [info] Successfully loaded target config: center=(1037.89, 553.62), tolerance=5
+[2025-11-24 10:13:36.087] [camera_logger] [info] camera movement detect start
+[2025-11-24 10:13:36.087] [camera_logger] [info] target surface center detect start
+[2025-11-24 10:13:36.089] [camera_logger] [info] black squares detect start
+[2025-11-24 10:13:36.091] [camera_logger] [info] black squares detect end, found 4 black squares
+[2025-11-24 10:13:36.091] [camera_logger] [info] target surface center detect end, center coordinates: (1037.91, 553.61)
+[2025-11-24 10:13:36.092] [camera_logger] [info] Camera self-test completed: stable (distance: 0.0px), tolerance: 5.0px
+[2025-11-24 10:13:36.116] [camera_logger] [info] Camera self-test image saved: ../output/2025-11-24-10-13-36_camera_check.jpg
+[2025-11-24 10:27:32.582] [camera_logger] [info] 
+===============================================================================
+[2025-11-24 10:27:32.583] [camera_logger] [info] Tolerance not found in config, using default value: 5
+[2025-11-24 10:27:32.583] [camera_logger] [info] Successfully loaded target config: center=(1037.89, 553.62), tolerance=5
+[2025-11-24 10:27:32.583] [camera_logger] [info] camera movement detect start
+[2025-11-24 10:27:32.583] [camera_logger] [info] target surface center detect start
+[2025-11-24 10:27:32.586] [camera_logger] [info] black squares detect start
+[2025-11-24 10:27:32.588] [camera_logger] [info] black squares detect end, found 4 black squares
+[2025-11-24 10:27:32.588] [camera_logger] [info] target surface center detect end, center coordinates: (1037.91, 553.61)
+[2025-11-24 10:27:32.588] [camera_logger] [info] Camera self-test completed: stable (distance: 0.0px), tolerance: 5.0px
+[2025-11-24 10:27:32.613] [camera_logger] [info] Camera self-test image saved: ../output/2025-11-24-10-27-32_camera_check.jpg
